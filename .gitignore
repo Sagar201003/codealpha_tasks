@@ -14,3 +14,8 @@ desktop.ini
 
 # Agents config
 .agents/
+
+# Python cache files
+__pycache__/
+*.pyc
+
