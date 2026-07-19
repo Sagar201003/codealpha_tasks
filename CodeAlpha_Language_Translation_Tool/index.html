@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LinguaFuse - Advanced Translation Tool</title>
+    <!-- Google Fonts: Outfit for headings, Inter for body/UI -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Main stylesheet -->
+    <link rel="stylesheet" href="style.css">
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar: Settings, Engines, and History -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <div class="logo">
+                    <div class="logo-icon">
+                        <i data-lucide="languages" class="logo-svg"></i>
+                    </div>
+                    <h1>LinguaFuse</h1>
+                </div>
+            </div>
+
+            <div class="sidebar-content">
+                <!-- Theme and Autotranslate Quick Toggles -->
+                <div class="section-card">
+                    <h3>Preferences</h3>
+                    <div class="setting-row">
+                        <span class="setting-label">
+                            <i data-lucide="moon"></i>
+                            Dark Mode
+                        </span>
+                        <label class="switch-toggle">
+                            <input type="checkbox" id="theme-toggle" checked>
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                    <div class="setting-row">
+                        <span class="setting-label">
+                            <i data-lucide="zap"></i>
+                            Auto-Translate
+                        </span>
+                        <label class="switch-toggle">
+                            <input type="checkbox" id="auto-translate-toggle" checked>
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Translation Engine Selector -->
+                <div class="section-card">
+                    <h3>Translation Engine</h3>
+                    <div class="engine-selector">
+                        <label class="engine-option">
+                            <input type="radio" name="translation-engine" value="mymemory" checked id="engine-mymemory">
+                            <span class="engine-box">
+                                <span class="engine-title">MyMemory</span>
+                                <span class="engine-desc">Free, No Key Required</span>
+                            </span>
+                        </label>
+                        <label class="engine-option">
+                            <input type="radio" name="translation-engine" value="google" id="engine-google">
+                            <span class="engine-box">
+                                <span class="engine-title">Google Cloud</span>
+                                <span class="engine-desc">Requires API Key</span>
+                            </span>
+                        </label>
+                        <label class="engine-option">
+                            <input type="radio" name="translation-engine" value="microsoft" id="engine-microsoft">
+                            <span class="engine-box">
+                                <span class="engine-title">Microsoft Translator</span>
+                                <span class="engine-desc">Requires Subscription Key</span>
+                            </span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- API Key Config Card (Toggled Visually) -->
+                <div class="section-card credentials-card hidden" id="credentials-card">
+                    <h3 id="credentials-title">API Credentials</h3>
+                    
+                    <!-- Google Cloud Key Input -->
+                    <div class="input-group hidden" id="google-key-group">
+                        <label for="google-api-key">Google Translation API Key</label>
+                        <div class="password-wrapper">
+                            <input type="password" id="google-api-key" placeholder="AIzaSy...">
+                            <button type="button" class="btn-toggle-password" data-target="google-api-key">
+                                <i data-lucide="eye"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Microsoft Key Input -->
+                    <div class="input-group hidden" id="microsoft-key-group">
+                        <label for="microsoft-api-key">Microsoft Subscription Key</label>
+                        <div class="password-wrapper">
+                            <input type="password" id="microsoft-api-key" placeholder="Enter key...">
+                            <button type="button" class="btn-toggle-password" data-target="microsoft-api-key">
+                                <i data-lucide="eye"></i>
+                            </button>
+                        </div>
+                        <label for="microsoft-region" style="margin-top: 10px;">Microsoft API Region (Optional)</label>
+                        <input type="text" id="microsoft-region" placeholder="global, eastus, etc.">
+                    </div>
+
+                    <button class="btn btn-save" id="btn-save-keys">
+                        <i data-lucide="save"></i> Save Credentials
+                    </button>
+                </div>
+
+                <!-- Translation History -->
+                <div class="history-section">
+                    <div class="history-header">
+                        <h3>Recent History</h3>
+                        <button class="btn-icon" id="clear-history" title="Clear all history">
+                            <i data-lucide="trash-2"></i>
+                        </button>
+                    </div>
+                    <div class="history-list" id="history-list">
+                        <!-- History Items populated dynamically -->
+                        <div class="history-empty">
+                            <i data-lucide="history"></i>
+                            <p>No translations yet</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Workspace Panel -->
+        <main class="main-panel">
+            <header class="app-header">
+                <button class="btn-icon menu-toggle" id="sidebar-toggle" title="Toggle Sidebar">
+                    <i data-lucide="menu"></i>
+                </button>
+                <div class="header-title">
+                    <h2>Workspace</h2>
+                    <span class="active-engine-badge" id="active-engine-badge">MyMemory Engine</span>
+                </div>
+            </header>
+
+            <div class="workspace-grid">
+                <!-- Source Translation Card -->
+                <div class="translation-card source-card">
+                    <div class="card-header">
+                        <!-- Custom Language Dropdown -->
+                        <div class="custom-select-container" id="source-lang-container">
+                            <button class="custom-select-trigger" id="source-lang-btn">
+                                <span class="selected-lang-text">Detect Language</span>
+                                <i data-lucide="chevron-down" class="chevron"></i>
+                            </button>
+                            <div class="custom-select-dropdown" id="source-lang-dropdown">
+                                <div class="dropdown-search">
+                                    <i data-lucide="search"></i>
+                                    <input type="text" id="source-lang-search" placeholder="Search languages...">
+                                </div>
+                                <ul class="dropdown-options" id="source-lang-options">
+                                    <!-- Populated dynamically -->
+                                </ul>
+                            </div>
+                        </div>
+
+                        <!-- Audio Wave Visualizer when Microphone is active -->
+                        <div class="mic-visualizer hidden" id="mic-visualizer">
+                            <div class="bar"></div>
+                            <div class="bar"></div>
+                            <div class="bar"></div>
+                            <div class="bar"></div>
+                            <span class="listening-text">Listening...</span>
+                        </div>
+                    </div>
+
+                    <div class="card-body">
+                        <textarea id="source-text" placeholder="Type or paste text to translate..." maxlength="2000"></textarea>
+                        <button class="clear-text-btn hidden" id="clear-text-btn" title="Clear text">
+                            <i data-lucide="x"></i>
+                        </button>
+                    </div>
+
+                    <div class="card-footer">
+                        <div class="actions-left">
+                            <button class="btn-icon footer-action-btn" id="btn-voice-input" title="Voice Typing (Speech-to-Text)">
+                                <i data-lucide="mic"></i>
+                            </button>
+                            <button class="btn-icon footer-action-btn" id="btn-speak-source" title="Read Aloud (Text-to-Speech)">
+                                <i data-lucide="volume-2"></i>
+                            </button>
+                        </div>
+                        <div class="actions-right">
+                            <span class="char-counter" id="char-counter">0 / 2000</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Swap Button -->
+                <div class="swap-container">
+                    <button class="swap-btn" id="btn-swap-languages" title="Swap languages">
+                        <i data-lucide="arrow-left-right"></i>
+                    </button>
+                </div>
+
+                <!-- Target Translation Card -->
+                <div class="translation-card target-card">
+                    <div class="card-header">
+                        <!-- Custom Language Dropdown -->
+                        <div class="custom-select-container" id="target-lang-container">
+                            <button class="custom-select-trigger" id="target-lang-btn">
+                                <span class="selected-lang-text">Spanish</span>
+                                <i data-lucide="chevron-down" class="chevron"></i>
+                            </button>
+                            <div class="custom-select-dropdown" id="target-lang-dropdown">
+                                <div class="dropdown-search">
+                                    <i data-lucide="search"></i>
+                                    <input type="text" id="target-lang-search" placeholder="Search languages...">
+                                </div>
+                                <ul class="dropdown-options" id="target-lang-options">
+                                    <!-- Populated dynamically -->
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card-body">
+                        <!-- Loading Overlay inside the translated body -->
+                        <div class="loading-overlay hidden" id="loading-overlay">
+                            <div class="spinner"></div>
+                            <span>Translating...</span>
+                        </div>
+                        <div class="translation-output-placeholder" id="translation-placeholder">
+                            Translation will appear here
+                        </div>
+                        <div class="translation-output-text hidden" id="translation-output" tabIndex="0"></div>
+                    </div>
+
+                    <div class="card-footer">
+                        <div class="actions-left">
+                            <button class="btn-icon footer-action-btn disabled" id="btn-speak-target" title="Read Aloud (Text-to-Speech)" disabled>
+                                <i data-lucide="volume-2"></i>
+                            </button>
+                        </div>
+                        <div class="actions-right">
+                            <button class="btn-icon footer-action-btn disabled" id="btn-copy-target" title="Copy to Clipboard" disabled>
+                                <i data-lucide="copy"></i>
+                            </button>
+                            <button class="btn-icon footer-action-btn disabled" id="btn-share" title="Share Translation" disabled>
+                                <i data-lucide="share-2"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Translate Action Panel -->
+            <div class="translate-action-panel" id="manual-translate-panel">
+                <button class="btn btn-primary" id="btn-translate-manual">
+                    <i data-lucide="globe"></i> Translate
+                </button>
+            </div>
+        </main>
+    </div>
+
+    <!-- Toast Notification Container -->
+    <div class="toast-container" id="toast-container"></div>
+
+    <script src="app.js"></script>
+</body>
+</html>
