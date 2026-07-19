@@ -1,0 +1,142 @@
+[
+  {
+    "id": 1,
+    "category": "E-Commerce",
+    "question": "What payment methods do you accept?",
+    "answer": "We accept all major credit/debit cards (Visa, MasterCard, American Express), PayPal, Apple Pay, Google Pay, and Net Banking.",
+    "tags": ["payment", "billing", "credit card", "paypal", "checkout", "pay"]
+  },
+  {
+    "id": 2,
+    "category": "E-Commerce",
+    "question": "How can I track my order status?",
+    "answer": "Once your order is shipped, you will receive an email with a tracking number and a live link. You can also view status under 'My Orders' in your account.",
+    "tags": ["track", "order", "shipping", "delivery", "status", "package"]
+  },
+  {
+    "id": 3,
+    "category": "E-Commerce",
+    "question": "What is your return and refund policy?",
+    "answer": "We offer a 30-day money-back guarantee. If you are not satisfied with your purchase, you can return it within 30 days of delivery for a full refund or exchange.",
+    "tags": ["return", "refund", "exchange", "money back", "guarantee", "policy"]
+  },
+  {
+    "id": 4,
+    "category": "E-Commerce",
+    "question": "Do you ship internationally?",
+    "answer": "Yes! We ship to over 100 countries worldwide. International shipping rates and delivery times are calculated at checkout based on your location.",
+    "tags": ["international", "global", "shipping", "country", "worldwide", "delivery"]
+  },
+  {
+    "id": 5,
+    "category": "E-Commerce",
+    "question": "How do I cancel my order?",
+    "answer": "You can cancel your order within 1 hour of placing it by visiting the 'Orders' section in your dashboard and clicking 'Cancel Order'. If it has already shipped, you can return it upon arrival.",
+    "tags": ["cancel", "cancellation", "stop order", "modify order", "remove"]
+  },
+  {
+    "id": 6,
+    "category": "SaaS & Account",
+    "question": "How do I reset my account password?",
+    "answer": "Click on the 'Forgot Password' link on the login page. Enter your registered email address, and we will send you a secure link to reset your password.",
+    "tags": ["password", "reset", "forgot password", "account", "login", "credentials"]
+  },
+  {
+    "id": 7,
+    "category": "SaaS & Account",
+    "question": "How can I upgrade or downgrade my subscription plan?",
+    "answer": "Navigate to Account Settings > Billing > Subscription Plan. From there, select your desired tier and confirm your choice. Changes take effect immediately.",
+    "tags": ["subscription", "upgrade", "downgrade", "plan", "billing", "pricing"]
+  },
+  {
+    "id": 8,
+    "category": "SaaS & Account",
+    "question": "Is my personal data safe and secure?",
+    "answer": "Absolutely. We enforce end-to-end 256-bit AES encryption, adhere to SOC2 Type II compliance, and strictly comply with GDPR regulations to safeguard your data.",
+    "tags": ["security", "privacy", "data", "encryption", "gdpr", "safe", "protection"]
+  },
+  {
+    "id": 9,
+    "category": "SaaS & Account",
+    "question": "Can I invite team members to my account?",
+    "answer": "Yes! Pro and Enterprise plans allow team collaboration. Go to Team Settings > Invite Member, type their email address, and assign appropriate roles (Admin, Editor, Viewer).",
+    "tags": ["team", "invite", "members", "collaboration", "users", "roles"]
+  },
+  {
+    "id": 10,
+    "category": "SaaS & Account",
+    "question": "How do I download my invoice or billing history?",
+    "answer": "Go to Account Settings > Billing > Invoices. You can view all past transactions and download official PDF receipts for accounting.",
+    "tags": ["invoice", "receipt", "billing history", "tax", "pdf", "payment record"]
+  },
+  {
+    "id": 11,
+    "category": "Technical Support",
+    "question": "What are the minimum system requirements?",
+    "answer": "Our application runs smoothly on any modern browser (Chrome 90+, Firefox 88+, Edge 90+, Safari 14+). Windows 10/11, macOS 10.15+, or Linux are supported.",
+    "tags": ["requirements", "system", "browser", "compatibility", "specs", "os"]
+  },
+  {
+    "id": 12,
+    "category": "Technical Support",
+    "question": "What should I do if the app freezes or crashes?",
+    "answer": "First, try clearing your browser cache and cookies, then hard refresh (Ctrl + Shift + R or Cmd + Shift + R). If the issue persists, contact technical support with your browser version.",
+    "tags": ["crash", "freeze", "bug", "troubleshoot", "cache", "slow", "error"]
+  },
+  {
+    "id": 13,
+    "category": "Technical Support",
+    "question": "Does this platform support API integration?",
+    "answer": "Yes, we provide REST and GraphQL APIs for seamless third-party integrations. You can generate your API key under Account Settings > Developer API.",
+    "tags": ["api", "integration", "developer", "webhook", "rest", "graphql", "key"]
+  },
+  {
+    "id": 14,
+    "category": "Technical Support",
+    "question": "Why am I not receiving notification emails?",
+    "answer": "Please check your Spam/Junk folder and add no-reply@example.com to your safe senders list. You can also verify your notification preferences under Profile Settings.",
+    "tags": ["email", "notification", "spam", "missing email", "alerts"]
+  },
+  {
+    "id": 15,
+    "category": "Technical Support",
+    "question": "Is offline mode available?",
+    "answer": "Limited offline access is supported on our mobile apps for viewing saved documents. However, syncing changes requires an active internet connection.",
+    "tags": ["offline", "internet", "sync", "connection", "no wifi"]
+  },
+  {
+    "id": 16,
+    "category": "HR & General",
+    "question": "What are your customer support operating hours?",
+    "answer": "Our automated chatbot is available 24/7! Human support agents are online Monday through Friday from 8:00 AM to 8:00 PM EST.",
+    "tags": ["hours", "support hours", "contact time", "operating hours", "available"]
+  },
+  {
+    "id": 17,
+    "category": "HR & General",
+    "question": "How can I contact a human customer support agent?",
+    "answer": "You can reach our support team by emailing support@example.com, submitting a ticket via our Help Center, or calling toll-free at +1 (800) 555-0199.",
+    "tags": ["contact", "human", "agent", "phone", "email", "ticket", "help"]
+  },
+  {
+    "id": 18,
+    "category": "HR & General",
+    "question": "Where is your company headquarters located?",
+    "answer": "Our global headquarters is located in San Francisco, California, with regional offices in London, Tokyo, and Sydney.",
+    "tags": ["location", "address", "headquarters", "office", "company", "city"]
+  },
+  {
+    "id": 19,
+    "category": "HR & General",
+    "question": "Are there any career opportunities or job openings?",
+    "answer": "We are always looking for top talent! Visit our Careers page at example.com/careers to explore open roles across engineering, product design, and customer success.",
+    "tags": ["jobs", "careers", "hiring", "openings", "work", "employment"]
+  },
+  {
+    "id": 20,
+    "category": "HR & General",
+    "question": "Do you offer discounts for non-profits or students?",
+    "answer": "Yes! We offer a 50% discount for verified educational institutions, students, and registered non-profit organizations. Contact sales with proof of eligibility.",
+    "tags": ["discount", "student", "nonprofit", "education", "offer", "coupon"]
+  }
+]

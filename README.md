@@ -9,6 +9,7 @@ A collection of web development projects built during the **CodeAlpha Internship
 | # | Project | Description | Tech Stack |
 |---|---------|-------------|------------|
 | 1 | [Language Translation Tool](./CodeAlpha_Language_Translation_Tool) | A modern translation app supporting 30+ languages with voice input, text-to-speech, and multi-engine support (MyMemory, Google, Microsoft). | HTML, CSS, JavaScript |
+| 2 | [Chatbot for FAQs](./CodeAlpha_Chatbot_for_FAQs) | An intelligent conversational FAQ chatbot powered by NLP preprocessing, TF-IDF vectorization, Cosine Similarity matching, and voice controls. | HTML, CSS, JS, Python |
 
 ---
 

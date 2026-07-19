@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FAQ Pulse - Intelligent FAQ Chatbot</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar Navigation / Knowledge Base Controls -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <div class="brand">
+                    <div class="brand-logo">
+                        <i data-lucide="bot"></i>
+                    </div>
+                    <div class="brand-text">
+                        <h2>FAQ Pulse</h2>
+                        <span class="badge online"><span class="dot"></span> Online AI</span>
+                    </div>
+                </div>
+                <button class="btn-icon mobile-only" id="btn-close-sidebar" aria-label="Close sidebar">
+                    <i data-lucide="x"></i>
+                </button>
+            </div>
+
+            <div class="sidebar-content">
+                <!-- Category Filter Section -->
+                <div class="sidebar-section">
+                    <h3 class="section-title"><i data-lucide="layers"></i> Categories</h3>
+                    <div class="category-pills" id="category-pills">
+                        <button class="pill active" data-category="all">All FAQs</button>
+                        <button class="pill" data-category="E-Commerce">E-Commerce</button>
+                        <button class="pill" data-category="SaaS & Account">SaaS & Account</button>
+                        <button class="pill" data-category="Technical Support">Tech Support</button>
+                        <button class="pill" data-category="HR & General">HR & General</button>
+                    </div>
+                </div>
+
+                <!-- Quick Suggested Questions -->
+                <div class="sidebar-section">
+                    <h3 class="section-title"><i data-lucide="sparkles"></i> Popular Questions</h3>
+                    <div class="quick-questions" id="quick-questions-list">
+                        <!-- Populated dynamically by app.js -->
+                    </div>
+                </div>
+
+                <!-- Knowledge Base Editor Trigger -->
+                <div class="sidebar-section">
+                    <h3 class="section-title"><i data-lucide="database"></i> Knowledge Base</h3>
+                    <button class="btn btn-secondary w-full" id="btn-open-kb-modal">
+                        <i data-lucide="edit-3"></i> Manage / Add FAQs
+                    </button>
+                </div>
+            </div>
+
+            <!-- Sidebar Footer Settings -->
+            <div class="sidebar-footer">
+                <div class="setting-item">
+                    <span class="setting-label"><i data-lucide="sliders"></i> Match Threshold</span>
+                    <div class="threshold-slider-container">
+                        <input type="range" id="threshold-slider" min="10" max="60" value="25" step="5">
+                        <span id="threshold-value">25%</span>
+                    </div>
+                </div>
+
+                <div class="setting-item">
+                    <span class="setting-label"><i data-lucide="volume-2"></i> Voice Answers</span>
+                    <label class="switch">
+                        <input type="checkbox" id="tts-toggle" checked>
+                        <span class="slider"></span>
+                    </label>
+                </div>
+
+                <div class="setting-item">
+                    <span class="setting-label"><i data-lucide="moon"></i> Dark Mode</span>
+                    <label class="switch">
+                        <input type="checkbox" id="theme-toggle" checked>
+                        <span class="slider"></span>
+                    </label>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Chat Area -->
+        <main class="chat-main">
+            <!-- Top Header -->
+            <header class="chat-header">
+                <button class="btn-icon mobile-only" id="btn-open-sidebar" aria-label="Open sidebar">
+                    <i data-lucide="menu"></i>
+                </button>
+
+                <div class="chat-header-info">
+                    <div class="bot-avatar">
+                        <i data-lucide="bot"></i>
+                    </div>
+                    <div>
+                        <h3 id="current-bot-title">FAQ Assistant</h3>
+                        <p class="subtitle">NLP TF-IDF & Cosine Similarity Engine</p>
+                    </div>
+                </div>
+
+                <div class="header-actions">
+                    <button class="btn-icon" id="btn-clear-chat" title="Clear Conversation">
+                        <i data-lucide="trash-2"></i>
+                    </button>
+                </div>
+            </header>
+
+            <!-- Chat Messages Display Area -->
+            <div class="chat-body" id="chat-body">
+                <!-- Welcome Message Card -->
+                <div class="message bot-message welcome-card">
+                    <div class="message-avatar">
+                        <i data-lucide="bot"></i>
+                    </div>
+                    <div class="message-content">
+                        <h4>Hello! 👋 Welcome to FAQ Pulse.</h4>
+                        <p>I am your instant AI FAQ assistant. Ask me anything about payment options, order tracking, password resets, tech specs, or company policies!</p>
+                        <div class="starter-suggestions" id="starter-suggestions">
+                            <button class="suggestion-btn" data-query="How do I track my order status?">📦 Track Order</button>
+                            <button class="suggestion-btn" data-query="How do I reset my password?">🔑 Reset Password</button>
+                            <button class="suggestion-btn" data-query="What payment methods do you accept?">💳 Payments</button>
+                            <button class="suggestion-btn" data-query="How to contact support?">📞 Contact Agent</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Reply Suggestions Pill Bar -->
+            <div class="quick-suggestions-bar hidden" id="quick-suggestions-bar">
+                <span class="suggestion-label"><i data-lucide="help-circle"></i> Did you mean:</span>
+                <div class="suggestion-chips" id="suggestion-chips">
+                    <!-- Populated dynamically on low-confidence matches -->
+                </div>
+            </div>
+
+            <!-- Input Controls Area -->
+            <footer class="chat-footer">
+                <form id="chat-form" class="chat-input-wrapper">
+                    <button type="button" class="btn-icon mic-btn" id="btn-voice-input" title="Speak Query (Voice Typing)">
+                        <i data-lucide="mic"></i>
+                    </button>
+
+                    <input type="text" id="user-input" placeholder="Type your question here... (e.g. 'How can I reset my password?')" autocomplete="off" required>
+
+                    <button type="submit" class="btn btn-primary send-btn" id="btn-send">
+                        <span>Send</span>
+                        <i data-lucide="send"></i>
+                    </button>
+                </form>
+                <div class="footer-note">
+                    <span>Powered by Client-Side Natural Language Preprocessing & Vector Cosine Similarity</span>
+                </div>
+            </footer>
+        </main>
+    </div>
+
+    <!-- Knowledge Base Manager Modal -->
+    <div class="modal-backdrop hidden" id="kb-modal">
+        <div class="modal-content glass-panel">
+            <div class="modal-header">
+                <h3><i data-lucide="database"></i> Knowledge Base Manager</h3>
+                <button class="btn-icon" id="btn-close-kb-modal"><i data-lucide="x"></i></button>
+            </div>
+            
+            <div class="modal-body">
+                <!-- Add New FAQ Form -->
+                <form id="add-faq-form" class="add-faq-box">
+                    <h4>Add New Q&A Pair</h4>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>Category</label>
+                            <select id="new-faq-category" required>
+                                <option value="E-Commerce">E-Commerce</option>
+                                <option value="SaaS & Account">SaaS & Account</option>
+                                <option value="Technical Support">Technical Support</option>
+                                <option value="HR & General">HR & General</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Question</label>
+                            <input type="text" id="new-faq-question" placeholder="e.g. Can I request a invoice receipt?" required>
+                        </div>
+                        <div class="form-group full-width">
+                            <label>Answer</label>
+                            <textarea id="new-faq-answer" rows="3" placeholder="Provide the detailed answer here..." required></textarea>
+                        </div>
+                        <div class="form-group full-width">
+                            <label>Keywords / Tags (comma-separated)</label>
+                            <input type="text" id="new-faq-tags" placeholder="e.g. invoice, receipt, tax, billing">
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-sm"><i data-lucide="plus"></i> Add FAQ</button>
+                </form>
+
+                <!-- Existing FAQs List -->
+                <div class="existing-faqs-header">
+                    <h4>Current FAQ List (<span id="faq-count">0</span>)</h4>
+                    <button class="btn btn-danger btn-xs" id="btn-reset-faqs"><i data-lucide="rotate-ccw"></i> Reset to Default</button>
+                </div>
+                
+                <div class="faq-list-container" id="modal-faq-list">
+                    <!-- Populated dynamically -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notifications Container -->
+    <div id="toast-container" class="toast-container"></div>
+
+    <script src="app.js"></script>
+</body>
+</html>
