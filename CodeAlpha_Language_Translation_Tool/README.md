@@ -46,11 +46,13 @@ Running this project is incredibly easy because it uses **pure static web assets
 Follow these step-by-step instructions to run the project on your machine.
 
 ### Step 1: Download or Clone the Repository
-If you haven't already, download the project folder to your local machine.
-```bash
-git clone https://github.com/Sagar201003/codealpha_tasks.git
-cd codealpha_tasks/CodeAlpha_Language_Translation_Tool
-```
+If you haven't already, download the project to your local machine. You can do this in two ways:
+*   **Method A (Download ZIP):** Go to the GitHub repository page, click the green **Code** button, and select **Download ZIP**. Once downloaded, **extract (unzip)** the folder on your computer.
+*   **Method B (Git):** Run the following command in your terminal:
+    ```bash
+    git clone https://github.com/Sagar201003/codealpha_tasks.git
+    cd codealpha_tasks/CodeAlpha_Language_Translation_Tool
+    ```
 
 ### Step 2: Choose a Method to Run the Project
 

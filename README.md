@@ -16,11 +16,13 @@ A collection of web development projects built during the **CodeAlpha Internship
 
 Each project is a standalone web app. To run any project locally:
 
-1. **Clone the repository**
-   ```bash
-   git clone https://github.com/Sagar201003/codealpha_tasks.git
-   cd codealpha_tasks
-   ```
+1. **Get the Code**
+   - **Option A (Git):** Clone the repository
+     ```bash
+     git clone https://github.com/Sagar201003/codealpha_tasks.git
+     cd codealpha_tasks
+     ```
+   - **Option B (Direct Download):** Click the green **Code** button at the top of this GitHub page, select **Download ZIP**, and extract the downloaded folder on your computer. Then open your terminal/command prompt and navigate into the extracted `codealpha_tasks` folder.
 
 2. **Navigate to a project folder**
    ```bash
