@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FAQ Pulse - Intelligent FAQ Chatbot</title>
+    <title>FAQ Pulse - AI Conversational Assistant</title>
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -13,17 +13,22 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div class="app-container">
-        <!-- Sidebar Navigation / Knowledge Base Controls -->
-        <aside class="sidebar" id="sidebar">
+    <div class="app-layout">
+        <!-- Ambient Background Glows -->
+        <div class="ambient-glow glow-1"></div>
+        <div class="ambient-glow glow-2"></div>
+
+        <!-- Sidebar Drawer -->
+        <aside class="sidebar-drawer" id="sidebar">
             <div class="sidebar-header">
                 <div class="brand">
-                    <div class="brand-logo">
+                    <div class="brand-avatar">
                         <i data-lucide="bot"></i>
+                        <span class="online-dot"></span>
                     </div>
-                    <div class="brand-text">
+                    <div class="brand-info">
                         <h2>FAQ Pulse</h2>
-                        <span class="badge online"><span class="dot"></span> Online AI</span>
+                        <span class="engine-tag"><i data-lucide="cpu"></i> TF-IDF Engine</span>
                     </div>
                 </div>
                 <button class="btn-icon mobile-only" id="btn-close-sidebar" aria-label="Close sidebar">
@@ -31,152 +36,209 @@
                 </button>
             </div>
 
-            <div class="sidebar-content">
-                <!-- Category Filter Section -->
-                <div class="sidebar-section">
-                    <h3 class="section-title"><i data-lucide="layers"></i> Categories</h3>
+            <div class="sidebar-scroll-area">
+                <!-- Categories Section -->
+                <div class="sidebar-group">
+                    <div class="group-title">
+                        <i data-lucide="layers"></i>
+                        <span>Topics & Categories</span>
+                    </div>
                     <div class="category-pills" id="category-pills">
-                        <button class="pill active" data-category="all">All FAQs</button>
-                        <button class="pill" data-category="E-Commerce">E-Commerce</button>
-                        <button class="pill" data-category="SaaS & Account">SaaS & Account</button>
-                        <button class="pill" data-category="Technical Support">Tech Support</button>
-                        <button class="pill" data-category="HR & General">HR & General</button>
+                        <button class="pill-chip active" data-category="all">
+                            <i data-lucide="grid"></i> All FAQs
+                        </button>
+                        <button class="pill-chip" data-category="E-Commerce">
+                            <i data-lucide="shopping-bag"></i> E-Commerce
+                        </button>
+                        <button class="pill-chip" data-category="SaaS & Account">
+                            <i data-lucide="user-check"></i> Account & SaaS
+                        </button>
+                        <button class="pill-chip" data-category="Technical Support">
+                            <i data-lucide="wrench"></i> Tech Support
+                        </button>
+                        <button class="pill-chip" data-category="HR & General">
+                            <i data-lucide="building"></i> HR & General
+                        </button>
                     </div>
                 </div>
 
-                <!-- Quick Suggested Questions -->
-                <div class="sidebar-section">
-                    <h3 class="section-title"><i data-lucide="sparkles"></i> Popular Questions</h3>
-                    <div class="quick-questions" id="quick-questions-list">
+                <!-- Popular Questions Section -->
+                <div class="sidebar-group">
+                    <div class="group-title">
+                        <i data-lucide="sparkles"></i>
+                        <span>Popular Questions</span>
+                    </div>
+                    <div class="quick-questions-stack" id="quick-questions-list">
                         <!-- Populated dynamically by app.js -->
                     </div>
                 </div>
 
-                <!-- Knowledge Base Editor Trigger -->
-                <div class="sidebar-section">
-                    <h3 class="section-title"><i data-lucide="database"></i> Knowledge Base</h3>
-                    <button class="btn btn-secondary w-full" id="btn-open-kb-modal">
-                        <i data-lucide="edit-3"></i> Manage / Add FAQs
+                <!-- Knowledge Base & Analytics Actions -->
+                <div class="sidebar-group">
+                    <div class="group-title">
+                        <i data-lucide="database"></i>
+                        <span>Management</span>
+                    </div>
+                    <button class="btn btn-glass w-full" id="btn-open-kb-modal">
+                        <i data-lucide="edit-3"></i> Manage / Add Q&A Pairs
+                    </button>
+                    <button class="btn btn-glass w-full" id="btn-open-directory-modal" style="margin-top: 0.4rem;">
+                        <i data-lucide="book-open"></i> Browse FAQ Directory
+                    </button>
+                    <button class="btn btn-glass w-full" id="btn-sidebar-analytics" style="margin-top: 0.4rem;">
+                        <i data-lucide="bar-chart-2"></i> View Performance Analytics
                     </button>
                 </div>
             </div>
 
-            <!-- Sidebar Footer Settings -->
+            <!-- Sidebar Controls Footer -->
             <div class="sidebar-footer">
-                <div class="setting-item">
-                    <span class="setting-label"><i data-lucide="sliders"></i> Match Threshold</span>
-                    <div class="threshold-slider-container">
+                <div class="control-row">
+                    <span class="control-label"><i data-lucide="user-cog"></i> Bot Persona</span>
+                    <select id="persona-selector" class="control-select">
+                        <option value="professional">💼 Professional</option>
+                        <option value="friendly">😊 Friendly</option>
+                        <option value="geeky">🤓 Tech Geek</option>
+                        <option value="pirate">🏴‍☠️ Pirate Bot</option>
+                    </select>
+                </div>
+
+                <div class="control-row">
+                    <span class="control-label"><i data-lucide="sliders"></i> Match Precision</span>
+                    <div class="range-wrapper">
                         <input type="range" id="threshold-slider" min="10" max="60" value="25" step="5">
-                        <span id="threshold-value">25%</span>
+                        <span id="threshold-value" class="range-badge">25%</span>
                     </div>
                 </div>
 
-                <div class="setting-item">
-                    <span class="setting-label"><i data-lucide="volume-2"></i> Voice Answers</span>
-                    <label class="switch">
+                <div class="control-row">
+                    <span class="control-label"><i data-lucide="volume-2"></i> Voice Playback</span>
+                    <label class="toggle-switch">
                         <input type="checkbox" id="tts-toggle" checked>
-                        <span class="slider"></span>
+                        <span class="toggle-track"></span>
                     </label>
                 </div>
 
-                <div class="setting-item">
-                    <span class="setting-label"><i data-lucide="moon"></i> Dark Mode</span>
-                    <label class="switch">
+                <div class="control-row">
+                    <span class="control-label"><i data-lucide="moon"></i> Dark Mode</span>
+                    <label class="toggle-switch">
                         <input type="checkbox" id="theme-toggle" checked>
-                        <span class="slider"></span>
+                        <span class="toggle-track"></span>
                     </label>
                 </div>
             </div>
         </aside>
 
-        <!-- Main Chat Area -->
-        <main class="chat-main">
-            <!-- Top Header -->
-            <header class="chat-header">
-                <button class="btn-icon mobile-only" id="btn-open-sidebar" aria-label="Open sidebar">
-                    <i data-lucide="menu"></i>
-                </button>
-
-                <div class="chat-header-info">
-                    <div class="bot-avatar">
-                        <i data-lucide="bot"></i>
-                    </div>
-                    <div>
-                        <h3 id="current-bot-title">FAQ Assistant</h3>
-                        <p class="subtitle">NLP TF-IDF & Cosine Similarity Engine</p>
+        <!-- Main Chat Workspace -->
+        <main class="chat-workspace">
+            <!-- Header Bar -->
+            <header class="workspace-header">
+                <div class="header-left">
+                    <button class="btn-icon mobile-only" id="btn-open-sidebar" aria-label="Open sidebar">
+                        <i data-lucide="menu"></i>
+                    </button>
+                    <div class="assistant-status">
+                        <div class="status-avatar" id="bot-avatar-icon">
+                            <i data-lucide="bot"></i>
+                        </div>
+                        <div class="status-meta">
+                            <div class="assistant-name-row">
+                                <h3 id="current-bot-title">FAQ Assistant</h3>
+                                <span class="sentiment-pill neutral" id="sentiment-badge"><i data-lucide="smile"></i> Friendly</span>
+                            </div>
+                            <span class="status-indicator">
+                                <span class="pulse-dot"></span> Ready to assist • Vector Cosine Matcher
+                            </span>
+                        </div>
                     </div>
                 </div>
 
-                <div class="header-actions">
-                    <button class="btn-icon" id="btn-clear-chat" title="Clear Conversation">
+                <div class="header-right">
+                    <button class="btn-icon header-btn" id="btn-open-analytics" title="Analytics Dashboard">
+                        <i data-lucide="bar-chart-2"></i>
+                    </button>
+                    <button class="btn-icon header-btn" id="btn-export-chat" title="Export Chat Transcript">
+                        <i data-lucide="download"></i>
+                    </button>
+                    <button class="btn-icon header-btn" id="btn-clear-chat" title="Clear Conversation">
                         <i data-lucide="trash-2"></i>
                     </button>
                 </div>
             </header>
 
-            <!-- Chat Messages Display Area -->
-            <div class="chat-body" id="chat-body">
-                <!-- Welcome Message Card -->
-                <div class="message bot-message welcome-card">
-                    <div class="message-avatar">
+            <!-- Chat Stream Feed -->
+            <div class="chat-feed" id="chat-body">
+                <!-- Welcome Hero Card -->
+                <div class="message-card bot-card welcome-hero">
+                    <div class="card-avatar">
                         <i data-lucide="bot"></i>
                     </div>
-                    <div class="message-content">
-                        <h4>Hello! 👋 Welcome to FAQ Pulse.</h4>
-                        <p>I am your instant AI FAQ assistant. Ask me anything about payment options, order tracking, password resets, tech specs, or company policies!</p>
-                        <div class="starter-suggestions" id="starter-suggestions">
-                            <button class="suggestion-btn" data-query="How do I track my order status?">📦 Track Order</button>
-                            <button class="suggestion-btn" data-query="How do I reset my password?">🔑 Reset Password</button>
-                            <button class="suggestion-btn" data-query="What payment methods do you accept?">💳 Payments</button>
-                            <button class="suggestion-btn" data-query="How to contact support?">📞 Contact Agent</button>
+                    <div class="card-bubble">
+                        <div class="hero-badge"><i data-lucide="sparkles"></i> AI Instant Support</div>
+                        <h4>Welcome to FAQ Pulse! 👋</h4>
+                        <p>Ask any question about order tracking, refunds, password recovery, tech specs, or company policies. I match your intent in real-time!</p>
+                        
+                        <div class="starter-chips" id="starter-suggestions">
+                            <button class="chip-btn" data-query="How do I track my order status?">
+                                <i data-lucide="package"></i> Track Order
+                            </button>
+                            <button class="chip-btn" data-query="How do I reset my password?">
+                                <i data-lucide="key"></i> Reset Password
+                            </button>
+                            <button class="chip-btn" data-query="What payment methods do you accept?">
+                                <i data-lucide="credit-card"></i> Payment Options
+                            </button>
+                            <button class="chip-btn" data-query="How to contact support?">
+                                <i data-lucide="headphones"></i> Human Agent
+                            </button>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <!-- Quick Reply Suggestions Pill Bar -->
-            <div class="quick-suggestions-bar hidden" id="quick-suggestions-bar">
-                <span class="suggestion-label"><i data-lucide="help-circle"></i> Did you mean:</span>
-                <div class="suggestion-chips" id="suggestion-chips">
-                    <!-- Populated dynamically on low-confidence matches -->
+            <!-- Input Bar & Autocomplete Area -->
+            <footer class="workspace-input-area">
+                <!-- Autocomplete Typeahead Dropdown -->
+                <div class="autocomplete-dropdown hidden" id="autocomplete-dropdown">
+                    <!-- Populated dynamically as user types -->
                 </div>
-            </div>
 
-            <!-- Input Controls Area -->
-            <footer class="chat-footer">
-                <form id="chat-form" class="chat-input-wrapper">
-                    <button type="button" class="btn-icon mic-btn" id="btn-voice-input" title="Speak Query (Voice Typing)">
+                <form id="chat-form" class="input-glass-bar">
+                    <button type="button" class="mic-trigger-btn" id="btn-voice-input" title="Voice Dictation (Click & Speak)">
                         <i data-lucide="mic"></i>
                     </button>
 
-                    <input type="text" id="user-input" placeholder="Type your question here... (e.g. 'How can I reset my password?')" autocomplete="off" required>
+                    <input type="text" id="user-input" placeholder="Type your question... (e.g., 'How can I request a refund?')" autocomplete="off" required>
 
-                    <button type="submit" class="btn btn-primary send-btn" id="btn-send">
-                        <span>Send</span>
+                    <button type="submit" class="send-trigger-btn" id="btn-send">
+                        <span>Ask</span>
                         <i data-lucide="send"></i>
                     </button>
                 </form>
-                <div class="footer-note">
-                    <span>Powered by Client-Side Natural Language Preprocessing & Vector Cosine Similarity</span>
+                <div class="input-caption">
+                    <span>Powered by Client-Side Natural Language Preprocessing & Cosine Similarity Algorithm</span>
                 </div>
             </footer>
         </main>
     </div>
 
     <!-- Knowledge Base Manager Modal -->
-    <div class="modal-backdrop hidden" id="kb-modal">
-        <div class="modal-content glass-panel">
-            <div class="modal-header">
-                <h3><i data-lucide="database"></i> Knowledge Base Manager</h3>
+    <div class="modal-overlay hidden" id="kb-modal">
+        <div class="modal-card">
+            <div class="modal-top">
+                <div class="modal-title">
+                    <i data-lucide="database"></i>
+                    <h3>Knowledge Base Editor</h3>
+                </div>
                 <button class="btn-icon" id="btn-close-kb-modal"><i data-lucide="x"></i></button>
             </div>
             
-            <div class="modal-body">
-                <!-- Add New FAQ Form -->
-                <form id="add-faq-form" class="add-faq-box">
+            <div class="modal-content-area">
+                <!-- Add New FAQ Box -->
+                <form id="add-faq-form" class="add-faq-card">
                     <h4>Add New Q&A Pair</h4>
-                    <div class="form-grid">
-                        <div class="form-group">
+                    <div class="form-grid-layout">
+                        <div class="field-item">
                             <label>Category</label>
                             <select id="new-faq-category" required>
                                 <option value="E-Commerce">E-Commerce</option>
@@ -185,37 +247,125 @@
                                 <option value="HR & General">HR & General</option>
                             </select>
                         </div>
-                        <div class="form-group">
+                        <div class="field-item">
                             <label>Question</label>
-                            <input type="text" id="new-faq-question" placeholder="e.g. Can I request a invoice receipt?" required>
+                            <input type="text" id="new-faq-question" placeholder="e.g., Can I get a tax invoice?" required>
                         </div>
-                        <div class="form-group full-width">
+                        <div class="field-item full-span">
                             <label>Answer</label>
-                            <textarea id="new-faq-answer" rows="3" placeholder="Provide the detailed answer here..." required></textarea>
+                            <textarea id="new-faq-answer" rows="2" placeholder="Write the answer here..." required></textarea>
                         </div>
-                        <div class="form-group full-width">
+                        <div class="field-item full-span">
                             <label>Keywords / Tags (comma-separated)</label>
-                            <input type="text" id="new-faq-tags" placeholder="e.g. invoice, receipt, tax, billing">
+                            <input type="text" id="new-faq-tags" placeholder="e.g. invoice, receipt, billing, tax">
                         </div>
                     </div>
-                    <button type="submit" class="btn btn-primary btn-sm"><i data-lucide="plus"></i> Add FAQ</button>
+                    <button type="submit" class="btn btn-primary btn-sm"><i data-lucide="plus"></i> Add Question</button>
                 </form>
 
-                <!-- Existing FAQs List -->
-                <div class="existing-faqs-header">
-                    <h4>Current FAQ List (<span id="faq-count">0</span>)</h4>
-                    <button class="btn btn-danger btn-xs" id="btn-reset-faqs"><i data-lucide="rotate-ccw"></i> Reset to Default</button>
+                <!-- Existing FAQ List & Backup Controls -->
+                <div class="list-meta-bar">
+                    <h4>Indexed Questions (<span id="faq-count">0</span>)</h4>
+                    <div class="kb-action-buttons">
+                        <button class="btn btn-glass btn-xs" id="btn-export-kb" title="Export Dataset to JSON"><i data-lucide="download"></i> Export JSON</button>
+                        <button class="btn btn-glass btn-xs" id="btn-trigger-import-kb" title="Import Dataset from JSON"><i data-lucide="upload"></i> Import JSON</button>
+                        <input type="file" id="input-import-kb" accept=".json" class="hidden">
+                        <button class="btn btn-ghost-danger btn-xs" id="btn-reset-faqs"><i data-lucide="rotate-ccw"></i> Reset Defaults</button>
+                    </div>
                 </div>
                 
-                <div class="faq-list-container" id="modal-faq-list">
+                <div class="faq-cards-stack" id="modal-faq-list">
                     <!-- Populated dynamically -->
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Toast Notifications Container -->
-    <div id="toast-container" class="toast-container"></div>
+    <!-- Analytics Dashboard Modal -->
+    <div class="modal-overlay hidden" id="analytics-modal">
+        <div class="modal-card">
+            <div class="modal-top">
+                <div class="modal-title">
+                    <i data-lucide="bar-chart-2"></i>
+                    <h3>Chatbot Performance Analytics</h3>
+                </div>
+                <button class="btn-icon" id="btn-close-analytics-modal"><i data-lucide="x"></i></button>
+            </div>
+
+            <div class="modal-content-area">
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon primary"><i data-lucide="message-square"></i></div>
+                        <div class="stat-info">
+                            <span class="stat-value" id="stat-total-queries">0</span>
+                            <span class="stat-label">Total Queries</span>
+                        </div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-icon accent"><i data-lucide="zap"></i></div>
+                        <div class="stat-info">
+                            <span class="stat-value" id="stat-avg-confidence">0%</span>
+                            <span class="stat-label">Avg Match Score</span>
+                        </div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-icon success"><i data-lucide="thumbs-up"></i></div>
+                        <div class="stat-info">
+                            <span class="stat-value" id="stat-satisfaction">100%</span>
+                            <span class="stat-label">User Satisfaction</span>
+                        </div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-icon warning"><i data-lucide="pie-chart"></i></div>
+                        <div class="stat-info">
+                            <span class="stat-value" id="stat-top-category">N/A</span>
+                            <span class="stat-label">Top Category</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="analytics-detail-box">
+                    <h4>Feedback Breakdown</h4>
+                    <div class="rating-bar-wrapper">
+                        <div class="rating-bar-fill" id="stat-rating-bar" style="width: 100%;"></div>
+                    </div>
+                    <div class="rating-meta">
+                        <span id="stat-upvotes-count">👍 0 Helpful</span>
+                        <span id="stat-downvotes-count">👎 0 Unhelpful</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- FAQ Directory / Catalog Modal -->
+    <div class="modal-overlay hidden" id="directory-modal">
+        <div class="modal-card">
+            <div class="modal-top">
+                <div class="modal-title">
+                    <i data-lucide="book-open"></i>
+                    <h3>FAQ Directory</h3>
+                </div>
+                <button class="btn-icon" id="btn-close-directory-modal"><i data-lucide="x"></i></button>
+            </div>
+            
+            <div class="modal-content-area">
+                <div class="search-faq-wrapper">
+                    <i data-lucide="search" class="search-icon"></i>
+                    <input type="text" id="directory-search-input" placeholder="Search FAQ directory...">
+                </div>
+                <div class="directory-accordion" id="directory-accordion-container">
+                    <!-- Populated dynamically by app.js -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notifications -->
+    <div id="toast-container" class="toast-stack"></div>
 
     <script src="app.js"></script>
 </body>
