@@ -1,52 +1,71 @@
-# 🚀 CodeAlpha Tasks
+# 🚀 CodeAlpha Internship Tasks Portfolio
 
-A collection of web development projects built during the **CodeAlpha Internship Program**. Each task is organized in its own folder with complete, production-ready code.
+Welcome to the **CodeAlpha Web Development Internship Project Portfolio**. This repository contains a collection of modern, production-grade web applications developed by **Sagar Shukla**.
 
----
-
-## 📂 Projects
-
-| # | Project | Description | Tech Stack |
-|---|---------|-------------|------------|
-| 1 | [Language Translation Tool](./CodeAlpha_Language_Translation_Tool) | A modern translation app supporting 30+ languages with voice input, text-to-speech, and multi-engine support (MyMemory, Google, Microsoft). | HTML, CSS, JavaScript |
-| 2 | [Chatbot for FAQs](./CodeAlpha_Chatbot_for_FAQs) | An intelligent conversational FAQ chatbot powered by NLP preprocessing, TF-IDF vectorization, Cosine Similarity matching, and voice controls. | HTML, CSS, JS, Python |
+Each project is located in its own self-contained folder with full source code, comprehensive README documentation, and zero complex build dependencies.
 
 ---
 
-## 🛠️ How to Run
+## 📂 Project Directory & Index
 
-Each project is a standalone web app. To run any project locally:
-
-1. **Get the Code**
-   - **Option A (Git):** Clone the repository
-     ```bash
-     git clone https://github.com/Sagar201003/codealpha_tasks.git
-     cd codealpha_tasks
-     ```
-   - **Option B (Direct Download):** Click the green **Code** button at the top of this GitHub page, select **Download ZIP**, and extract the downloaded folder on your computer. Then open your terminal/command prompt and navigate into the extracted `codealpha_tasks` folder.
-
-2. **Navigate to a project folder**
-   ```bash
-   cd CodeAlpha_Language_Translation_Tool
-   ```
-
-3. **Open in browser**
-   - Simply open `index.html` directly in your browser, **or**
-   - Use a local dev server for the best experience:
-     ```bash
-     npx http-server . -p 8080
-     ```
-     Then visit `http://localhost:8080`
+| # | Project Name | Description & Highlights | Tech Stack | Project Link |
+|---|--------------|--------------------------|------------|--------------|
+| 1 | **LinguaFuse** (Language Translation Tool) | A modern, responsive translation app supporting 30+ major languages with real-time debounced translation, multi-engine support (MyMemory, Google Cloud, Microsoft Azure), speech-to-text voice typing, text-to-speech pronunciation, local translation history, and glassmorphic UI. | HTML5, CSS3 (Vanilla), JavaScript (ES6+), Web Speech API, Translation APIs | [View README](./CodeAlpha_Language_Translation_Tool/README.md) |
+| 2 | **FAQ Pulse** (AI Conversational FAQ Chatbot) | An intelligent conversational FAQ chatbot powered by a client-side NLP engine with TF-IDF vectorization, Cosine Similarity matching ($\frac{\mathbf{A} \cdot \mathbf{B}}{\|\mathbf{A}\| \|\mathbf{B}\|}$), match precision slider, sentiment/emotion detection, voice dictation/playback, analytics dashboard, knowledge base editor, markdown formatting, persona switcher, synonym expansion, and searchable FAQ catalog. | HTML5, CSS3 (Vanilla), JS (ES6+), Web Speech API, Python (scikit-learn) | [View README](./CodeAlpha_Chatbot_for_FAQs/README.md) |
 
 ---
 
-## 👤 Author
+## 🛠️ How to Run Any Project Locally
+
+All applications in this repository are built with vanilla web technologies, meaning they run directly inside any modern web browser without requiring complex framework compilation.
+
+### Step 1: Download or Clone the Repository
+* **Option A (Git Clone - Recommended):**
+  ```bash
+  git clone https://github.com/Sagar201003/codealpha_tasks.git
+  cd codealpha_tasks
+  ```
+* **Option B (Direct Download):**
+  1. Click the green **Code** button at the top of this GitHub repository.
+  2. Select **Download ZIP** and extract the folder on your computer.
+  3. Open your terminal or command prompt and navigate into the extracted `codealpha_tasks` directory.
+
+---
+
+### Step 2: Choose a Project to Run
+
+#### Task 1: Language Translation Tool
+```bash
+cd CodeAlpha_Language_Translation_Tool
+```
+- **Option 1 (Quick Open):** Double-click `index.html` to open directly in your web browser.
+- **Option 2 (Local Server - Recommended for Speech API):**
+  ```bash
+  npx http-server . -p 8080
+  ```
+  Then visit `http://localhost:8080` in your browser.
+
+#### Task 2: FAQ Chatbot Application
+```bash
+cd CodeAlpha_Chatbot_for_FAQs
+```
+- **Option 1 (Quick Open):** Double-click `index.html` to open directly in your web browser.
+- **Option 2 (Local Server - Recommended for Speech & Storage APIs):**
+  ```bash
+  npx http-server . -p 8080
+  ```
+  Then visit `http://localhost:8080` in your browser.
+
+---
+
+## 🧑‍💻 Author Information
 
 **Sagar Shukla**  
-CodeAlpha Intern  
+*CodeAlpha Web Development Intern*  
+GitHub Repository: [https://github.com/Sagar201003/codealpha_tasks.git](https://github.com/Sagar201003/codealpha_tasks.git)
 
 ---
 
-## 📄 License
+## 📄 License & Attribution
 
-This repository is for educational and internship purposes.
+This repository is maintained for educational and portfolio presentation purposes under the CodeAlpha Internship Program.

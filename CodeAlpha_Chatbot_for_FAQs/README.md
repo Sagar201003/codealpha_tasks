@@ -1,118 +1,103 @@
 # 🤖 FAQ Pulse - AI Conversational FAQ Assistant
 
-FAQ Pulse is a modern, responsive, and high-performance conversational AI application designed to answer Frequently Asked Questions (FAQs). It features a **client-side Natural Language Processing (NLP) engine** using **TF-IDF Vectorization** and **Cosine Similarity** to match user questions with the best response from a pre-loaded knowledge base.
+**FAQ Pulse** is an intelligent, responsive, and feature-rich conversational FAQ chatbot built using vanilla HTML5, CSS3, and JavaScript. It features an advanced **client-side Natural Language Processing (NLP) engine** utilizing **TF-IDF Vectorization** and **Cosine Similarity** ($\frac{\mathbf{A} \cdot \mathbf{B}}{\|\mathbf{A}\| \|\mathbf{B}\|}$) to accurately parse, rank, and answer user queries against a pre-loaded knowledge base.
 
 ---
 
-## 🚀 Key Features
+## 🚀 Key Features & Capabilities
 
-*   **🧠 Natural Language Preprocessing & Vector Matching**:
-    *   **Text Cleaning & Normalization**: Strips special characters, converts text to lowercase, and filters out common stop-words.
-    *   **Word Stemming**: Normalizes word variations (e.g. *tracking*, *tracked*, *tracks* → *track*).
-    *   **TF-IDF Vectorization**: Calculates Term Frequency & Inverse Document Frequency across all FAQ documents.
-    *   **Cosine Similarity Matching**: Computes mathematical vector closeness ($\frac{\mathbf{A} \cdot \mathbf{B}}{\|\mathbf{A}\| \|\mathbf{B}\|}$) to deliver the most relevant answer.
-*   **📊 Match Confidence & Precision Controls**:
-    *   Displays relevance match percentages (e.g. `95% match`) on every answer.
-    *   **High Match (>70%)**: Green badge indicator.
-    *   **Medium Match (40-70%)**: Yellow badge indicator.
-    *   **Low Match / Fallback (<35%)**: Embeds suggested related question chips directly inside the bot response card.
-    *   **Match Precision Slider**: Dynamically adjust match confidence threshold (10% - 60%).
-*   **🔍 Typeahead Autocomplete Search**:
-    *   Floating dropdown recommending top matching questions in real-time as you type.
-*   **👍 / 👎 Interactive Response Rating System**:
-    *   Rate every bot answer as helpful or unhelpful to calculate user satisfaction percentage.
-*   **🎭 Sentiment & Emotion Reaction Engine**:
-    *   Detects user mood (Frustrated, Positive, Neutral) and adapts the bot's avatar badge and tone dynamically (prepending empathetic messages when frustration is detected).
-*   **🗣️ Voice Dictation & Audio Playback**:
-    *   🎙️ **Voice Dictation**: Speak into your microphone to dictate questions using the Web Speech API.
-    *   🔊 **Text-to-Speech (Pronunciation)**: Listen to audio readouts of chatbot answers.
-*   **📊 Performance Analytics Dashboard Modal**:
-    *   Real-time metrics: Total Queries, Average Match Score %, User Satisfaction Rate %, and Top Category.
-*   **📥 / 📤 Export & Import System**:
-    *   **Export Transcript**: Download full chat transcript as a formatted `.txt` file.
-    *   **Export/Import Knowledge Base**: Export dataset or import custom JSON FAQ files.
-*   **📝 Markdown & Rich Text Formatting**:
-    *   Renders bold text (`**text**`), bullet lists (`- item`), and hyperlinks (`[label](url)`) inside chatbot response cards.
-*   **🎭 Conversational Persona Switcher**:
-    *   Switch between **Professional Assistant**, **Friendly Buddy**, **Tech Geek**, and **Pirate Bot** with custom avatars, greetings, and tone templates.
-*   **📖 Synonym Match Expansion**:
-    *   Built-in dictionary mapping synonyms (e.g. *buy*/*purchase*, *billing*/*cost*, *reset*/*password*, *track*/*shipping*) to boost vector matching.
-*   **📖 Searchable FAQ Directory Modal**:
-    *   Accordion-style catalog browser to search, filter, and inspect FAQs by category outside of the chat feed.
-*   **♿ Keyboard Shortcuts & Navigation**:
-    *   Use `ArrowUp` / `ArrowDown` to navigate autocomplete suggestions, `Enter` to select, and `Esc` to close modals.
-*   **🗄️ Interactive Knowledge Base Editor**:
-    *   Add custom Q&A pairs directly through the UI.
-    *   Filter FAQs by category (E-Commerce, SaaS & Account, Tech Support, HR & General).
-    *   Persistent storage using `localStorage`.
+### 🧠 Core NLP & Vector Search Engine
+* **Text Preprocessing**: Tokenization, stop-words cleaning, and Porter-style suffix stemming (*e.g., tracking, tracks → track*).
+* **Synonym Match Expansion**: Built-in synonym mapping (*buy ↔ purchase ↔ upgrade*, *billing ↔ cost ↔ price*, *track ↔ shipping*, *reset ↔ password*) to boost query matching on alternative phrasing.
+* **TF-IDF & Cosine Similarity Math**: Real-time mathematical vector closeness matching across indexed FAQ vectors.
+* **Match Confidence Badges**: Color-coded relevance badges (*High Match >70%*, *Medium Match 40-70%*, *Low Match / Fallback <35%*).
+* **Precision Slider**: Adjust match relevance threshold dynamically from 10% to 60%.
+
+### 🎭 Personalization & Conversational Tone
+* **Conversational Persona Selector**: Switch between 4 distinct bot personalities:
+  * 💼 **Professional Assistant**: Official, polite, technical style.
+  * 😊 **Friendly Buddy**: Empathetic, warm, approachable tone.
+  * 🤓 **Tech Geek**: Vector space, query centroid, and output stream dialect.
+  * 🏴‍☠️ **Pirate Bot**: Nautical pirate phrasing (*"Arrr! Here be the answers ye seek"*).
+* **Sentiment & Emotion Detection**: Detects user mood (*Frustrated*, *Positive*, *Neutral*) and adapts bot responses with empathetic prefixes when frustration is detected.
+
+### 📝 Rich Content & Search Catalog
+* **Markdown & Rich-Text Support**: Renders bold text (`**text**`), bullet lists (`- item`), and hyperlinks (`[label](url)`) inside chat bubbles.
+* **Searchable FAQ Directory Modal**: Accordion-style catalog browser allowing users to search, filter, and inspect FAQs by category outside the chat feed.
+* **Typeahead Autocomplete**: Real-time floating dropdown matching FAQs as you type, complete with `ArrowUp` / `ArrowDown` / `Enter` keyboard selection.
+
+### 🗣️ Voice Controls & Analytics Dashboard
+* 🎙️ **Voice Dictation (Speech-to-Text)**: Dictate questions using your microphone via the Web Speech API.
+* 🔊 **Text-to-Speech (Pronunciation)**: Listen to audio readouts of chatbot answers.
+* 📊 **Performance Analytics Modal**: Displays total queries processed, average confidence score %, user satisfaction rate %, and top query categories.
+* 👍 / 👎 **Helpfulness Feedback Rating**: Rate individual responses as helpful or unhelpful to update live satisfaction metrics.
+* 📥 / 📤 **Import & Export Systems**: Export conversation transcripts to `.txt` files, and export/import knowledge base `.json` datasets.
+* 🗄️ **Knowledge Base Editor**: Add, delete, or reset FAQ Q&A pairs directly in the UI with `localStorage` persistence.
 
 ---
 
-## 🛠️ Folder Structure
+## 🛠️ Project Structure
 
 ```text
 CodeAlpha_Chatbot_for_FAQs/
-├── index.html       # HTML5 structure for chat dashboard, autocomplete, and modals
-├── style.css        # Premium glassmorphic design system, themes, and animations
-├── app.js           # Client-side NLP engine, Sentiment, Autocomplete, Analytics, & UI logic
-├── faqs.json        # Pre-loaded FAQ dataset with 20+ Q&A pairs
+├── index.html       # HTML5 layout for chat feed, modals, and input area
+├── style.css        # Glassmorphic UI design, themes, and responsive layouts
+├── app.js           # NLP engine, Sentiment, Autocomplete, Personas, and UI state
+├── faqs.json        # Pre-loaded FAQ dataset (20+ Q&A pairs)
 ├── nlp_engine.py    # Python CLI reference implementation (scikit-learn)
-└── README.md        # Project documentation and setup instructions
+└── README.md        # Complete project documentation
 ```
 
 ---
 
 ## 💻 How to Run Locally on Your System
 
-Running this project is fast and straightforward.
-
 ### Step 1: Download or Clone the Repository
-*   **Option A (Download ZIP):** Click the green **Code** button on GitHub, select **Download ZIP**, and extract the folder.
-*   **Option B (Git Clone):**
-    ```bash
-    git clone https://github.com/Sagar201003/codealpha_tasks.git
-    cd codealpha_tasks/CodeAlpha_Chatbot_for_FAQs
-    ```
+
+* **Option A (Git Clone):**
+  ```bash
+  git clone https://github.com/Sagar201003/codealpha_tasks.git
+  cd codealpha_tasks/CodeAlpha_Chatbot_for_FAQs
+  ```
+* **Option B (Direct ZIP Download):**
+  1. Download the ZIP file from GitHub and extract it.
+  2. Open terminal and navigate into `CodeAlpha_Chatbot_for_FAQs`.
 
 ---
 
 ### Step 2: Launch the Web Application
 
 #### Method A: Direct File Launch (Quickest)
-1. Open the `CodeAlpha_Chatbot_for_FAQs` folder in your File Explorer.
+1. Open the `CodeAlpha_Chatbot_for_FAQs` folder in your file explorer.
 2. Double-click `index.html`.
-3. It will open instantly in your default web browser.
+3. It will open immediately in your web browser.
 
-#### Method B: Using Node.js HTTP Server (Recommended)
-For the best experience (and full Web Speech API compatibility):
-1. Open your terminal or command prompt.
-2. Navigate to the project directory:
-   ```bash
-   cd CodeAlpha_Chatbot_for_FAQs
-   ```
-3. Run a local server:
+#### Method B: Local Web Server (Recommended)
+For full Web Speech API compatibility and local storage persistence:
+1. Open terminal in the `CodeAlpha_Chatbot_for_FAQs` folder.
+2. Run a static server:
    ```bash
    npx http-server -p 8080
    ```
-4. Open your browser and navigate to: `http://localhost:8080`
+3. Open your browser and go to `http://localhost:8080`.
 
 ---
 
 ## 🐍 Running the Python CLI Engine (Optional)
 
-If you'd like to test the backend Python NLP engine:
+If you wish to test the python-based reference CLI engine:
 
-1. Install `scikit-learn`:
+1. Install dependencies:
    ```bash
    pip install scikit-learn
    ```
-2. Run the script:
+2. Run the engine:
    ```bash
    python nlp_engine.py
    ```
 
 ---
 
-## 📄 License
+## 📄 License & Internship Notes
 
-This project is created for educational and internship purposes under the CodeAlpha program.
+Developed under the **CodeAlpha Web Development Internship Program** by **Sagar Shukla**.
