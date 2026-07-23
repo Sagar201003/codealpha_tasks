@@ -4,6 +4,12 @@
 
 ---
 
+## 🌐 Live Deployed Application
+
+* 🌐 **Live Web Studio**: [https://melodymind-ai-music.vercel.app/](https://melodymind-ai-music.vercel.app/)
+
+---
+
 ## 🚀 Key Features & Capabilities
 
 * **🧠 Deep Learning Attention-Enhanced LSTM Architecture (`AttentionMusicLSTM`)**:
@@ -43,6 +49,10 @@ CodeAlpha_Music_Generation_with_AI/
 │   ├── index.html            # Web Audio AI Studio dashboard UI
 │   ├── style.css             # Glassmorphic dark styling, equalizers & piano roll
 │   └── app.js                # Web Audio Synthesizer, Piano Roll renderer & MIDI exporter
+├── index.html                # Vercel static root index
+├── style.css                # Vercel static root styles
+├── app.js                    # Vercel static root audio engine script
+├── vercel.json               # Vercel static deployment config
 ├── train.py                  # CLI training pipeline with AdamW, Loss Tracking & Checkpointing
 ├── generate_music.py         # CLI AI music composition script with Self-Attention & Top-P
 ├── requirements.txt          # Python dependencies (torch, music21, mido, numpy, scipy)
@@ -75,7 +85,7 @@ pip install -r requirements.txt
    ```
 2. Start a local HTTP server:
    ```bash
-   npx http-server web -p 8080
+   npx http-server . -p 8080
    ```
 3. Open your browser and visit: `http://localhost:8080`
 4. Click **✨ Compose AI Music**, customize tempo/temperature, play synthesized audio, and click **📥 Download .MID**!
