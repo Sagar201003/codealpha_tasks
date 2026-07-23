@@ -1,0 +1,7 @@
+{
+  "outputDirectory": "web",
+  "cleanUrls": true,
+  "rewrites": [
+    { "source": "/(.*)", "destination": "/web/$1" }
+  ]
+}
