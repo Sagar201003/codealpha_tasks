@@ -12,7 +12,7 @@ Each project is located in its own self-contained folder with full source code, 
 |---|--------------|--------------------------|------------|---------------|
 | 1 | **LinguaFuse** (Language Translation Tool) | A modern, responsive translation app supporting 30+ major languages with real-time debounced translation, multi-engine support (MyMemory, Google Cloud, Microsoft Azure), speech-to-text voice typing, text-to-speech pronunciation, local translation history, and glassmorphic UI. | HTML5, CSS3 (Vanilla), JavaScript (ES6+), Web Speech API, Translation APIs | [View README](./CodeAlpha_Language_Translation_Tool/README.md) |
 | 2 | **FAQ Pulse** (AI Conversational FAQ Chatbot) | An intelligent conversational FAQ chatbot powered by a client-side NLP engine with TF-IDF vectorization, Cosine Similarity matching ($\frac{\mathbf{A} \cdot \mathbf{B}}{\|\mathbf{A}\| \|\mathbf{B}\|}$), match precision slider, sentiment/emotion detection, voice dictation/playback, analytics dashboard, knowledge base editor, markdown formatting, persona switcher, synonym expansion, and searchable FAQ catalog. | HTML5, CSS3 (Vanilla), JS (ES6+), Web Speech API, Python (scikit-learn) | [View README](./CodeAlpha_Chatbot_for_FAQs/README.md) |
-| 3 | **MelodyMind AI** (Music Generation with AI) | A deep learning music generation platform powered by PyTorch LSTM neural networks and `music21` sequence preprocessing. Features an interactive glassmorphic Web Audio Synthesizer studio, real-time Piano Roll visualizer, temperature creativity controls, genre profiles, and binary `.mid` MIDI file exporter. | HTML5, CSS3, JS, Web Audio API, PyTorch, music21, mido | [View README](./CodeAlpha_Music_Generation_with_AI/README.md) |
+| 3 | **MelodyMind AI** (Music Generation with AI) | A deep learning music generation platform powered by an **Attention-Enhanced PyTorch LSTM (`AttentionMusicLSTM`)** with Multi-Head Self-Attention layers, Layer Normalization, Top-P (Nucleus) sampling, and `music21` sequence preprocessing. Features an interactive glassmorphic Web Audio Synthesizer studio, real-time Piano Roll visualizer, temperature creativity controls, genre profiles, and binary `.mid` MIDI file exporter. | HTML5, CSS3, JS, Web Audio API, PyTorch, music21, mido | [View README](./CodeAlpha_Music_Generation_with_AI/README.md) |
 
 ---
 
@@ -76,7 +76,7 @@ cd CodeAlpha_Music_Generation_with_AI
 - **Option 2 (Python CLI Pipeline):**
   ```bash
   pip install -r requirements.txt
-  python generate_music.py --num_notes 60 --temperature 0.8
+  python generate_music.py --num_notes 60 --temperature 0.8 --top_p 0.85
   ```
 
 ---
