@@ -2,16 +2,23 @@
 
 Welcome to the **CodeAlpha Web Development Internship Project Portfolio**. This repository contains a collection of modern, production-grade web applications developed by **Sagar Shukla**.
 
-Each project is located in its own self-contained folder with full source code, comprehensive README documentation, and zero complex build dependencies.
+Each project is located in its own self-contained folder with full source code, comprehensive README documentation, zero complex build dependencies, and live deployments on Vercel.
 
 ---
 
-## 📂 Project Directory & Index
+## 🌐 Live Deployed Applications
 
-| # | Project Name | Description & Highlights | Tech Stack | Project Link |
-|---|--------------|--------------------------|------------|--------------|
-| 1 | **LinguaFuse** (Language Translation Tool) | A modern, responsive translation app supporting 30+ major languages with real-time debounced translation, multi-engine support (MyMemory, Google Cloud, Microsoft Azure), speech-to-text voice typing, text-to-speech pronunciation, local translation history, and glassmorphic UI. | HTML5, CSS3 (Vanilla), JavaScript (ES6+), Web Speech API, Translation APIs | [View README](./CodeAlpha_Language_Translation_Tool/README.md) |
-| 2 | **FAQ Pulse** (AI Conversational FAQ Chatbot) | An intelligent conversational FAQ chatbot powered by a client-side NLP engine with TF-IDF vectorization, Cosine Similarity matching ($\frac{\mathbf{A} \cdot \mathbf{B}}{\|\mathbf{A}\| \|\mathbf{B}\|}$), match precision slider, sentiment/emotion detection, voice dictation/playback, analytics dashboard, knowledge base editor, markdown formatting, persona switcher, synonym expansion, and searchable FAQ catalog. | HTML5, CSS3 (Vanilla), JS (ES6+), Web Speech API, Python (scikit-learn) | [View README](./CodeAlpha_Chatbot_for_FAQs/README.md) |
+| # | Project Name | Live Vercel URL | Description & Highlights | Tech Stack | Documentation |
+|---|--------------|-----------------|--------------------------|------------|---------------|
+| 1 | **LinguaFuse** (Language Translation Tool) | [🔗 Live Demo](https://languagetranslator-swart.vercel.app/) | A modern, responsive translation app supporting 30+ major languages with real-time debounced translation, multi-engine support (MyMemory, Google Cloud, Microsoft Azure), speech-to-text voice typing, text-to-speech pronunciation, local translation history, and glassmorphic UI. | HTML5, CSS3 (Vanilla), JavaScript (ES6+), Web Speech API, Translation APIs | [View README](./CodeAlpha_Language_Translation_Tool/README.md) |
+| 2 | **FAQ Pulse** (AI Conversational FAQ Chatbot) | [🔗 Live Demo](https://faqchatbot-kappa.vercel.app/) | An intelligent conversational FAQ chatbot powered by a client-side NLP engine with TF-IDF vectorization, Cosine Similarity matching ($\frac{\mathbf{A} \cdot \mathbf{B}}{\|\mathbf{A}\| \|\mathbf{B}\|}$), match precision slider, sentiment/emotion detection, voice dictation/playback, analytics dashboard, knowledge base editor, markdown formatting, persona switcher, synonym expansion, and searchable FAQ catalog. | HTML5, CSS3 (Vanilla), JS (ES6+), Web Speech API, Python (scikit-learn) | [View README](./CodeAlpha_Chatbot_for_FAQs/README.md) |
+
+---
+
+## 📂 Project Links Summary
+
+* 🌐 **Language Translation Tool Live Site**: [https://languagetranslator-swart.vercel.app/](https://languagetranslator-swart.vercel.app/)
+* 🌐 **FAQ Chatbot Live Site**: [https://faqchatbot-kappa.vercel.app/](https://faqchatbot-kappa.vercel.app/)
 
 ---
 
@@ -38,8 +45,9 @@ All applications in this repository are built with vanilla web technologies, mea
 ```bash
 cd CodeAlpha_Language_Translation_Tool
 ```
-- **Option 1 (Quick Open):** Double-click `index.html` to open directly in your web browser.
-- **Option 2 (Local Server - Recommended for Speech API):**
+- **Option 1 (Live Demo):** Visit [https://languagetranslator-swart.vercel.app/](https://languagetranslator-swart.vercel.app/)
+- **Option 2 (Quick Open):** Double-click `index.html` to open directly in your web browser.
+- **Option 3 (Local Server - Recommended for Speech API):**
   ```bash
   npx http-server . -p 8080
   ```
@@ -49,8 +57,9 @@ cd CodeAlpha_Language_Translation_Tool
 ```bash
 cd CodeAlpha_Chatbot_for_FAQs
 ```
-- **Option 1 (Quick Open):** Double-click `index.html` to open directly in your web browser.
-- **Option 2 (Local Server - Recommended for Speech & Storage APIs):**
+- **Option 1 (Live Demo):** Visit [https://faqchatbot-kappa.vercel.app/](https://faqchatbot-kappa.vercel.app/)
+- **Option 2 (Quick Open):** Double-click `index.html` to open directly in your web browser.
+- **Option 3 (Local Server - Recommended for Speech & Storage APIs):**
   ```bash
   npx http-server . -p 8080
   ```

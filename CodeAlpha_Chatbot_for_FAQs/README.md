@@ -2,6 +2,8 @@
 
 **FAQ Pulse** is an intelligent, responsive, and feature-rich conversational FAQ chatbot built using vanilla HTML5, CSS3, and JavaScript. It features an advanced **client-side Natural Language Processing (NLP) engine** utilizing **TF-IDF Vectorization** and **Cosine Similarity** ($\frac{\mathbf{A} \cdot \mathbf{B}}{\|\mathbf{A}\| \|\mathbf{B}\|}$) to accurately parse, rank, and answer user queries against a pre-loaded knowledge base.
 
+🌐 **Live Deployed Application**: [https://faqchatbot-kappa.vercel.app/](https://faqchatbot-kappa.vercel.app/)
+
 ---
 
 ## 🚀 Key Features & Capabilities
@@ -52,7 +54,15 @@ CodeAlpha_Chatbot_for_FAQs/
 
 ## 💻 How to Run Locally on Your System
 
-### Step 1: Download or Clone the Repository
+### Option 1: Access Live Deployment (Instant)
+Access the live production chatbot instantly on Vercel:
+👉 **[https://faqchatbot-kappa.vercel.app/](https://faqchatbot-kappa.vercel.app/)**
+
+---
+
+### Option 2: Run Locally from Source Code
+
+#### Step 1: Download or Clone the Repository
 
 * **Option A (Git Clone):**
   ```bash
@@ -65,14 +75,14 @@ CodeAlpha_Chatbot_for_FAQs/
 
 ---
 
-### Step 2: Launch the Web Application
+#### Step 2: Launch the Web Application
 
-#### Method A: Direct File Launch (Quickest)
+##### Method A: Direct File Launch (Quickest)
 1. Open the `CodeAlpha_Chatbot_for_FAQs` folder in your file explorer.
 2. Double-click `index.html`.
 3. It will open immediately in your web browser.
 
-#### Method B: Local Web Server (Recommended)
+##### Method B: Local Web Server (Recommended)
 For full Web Speech API compatibility and local storage persistence:
 1. Open terminal in the `CodeAlpha_Chatbot_for_FAQs` folder.
 2. Run a static server:

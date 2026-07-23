@@ -2,6 +2,8 @@
 
 **LinguaFuse** is a modern, high-performance, single-page language translation web application built with vanilla HTML5, CSS3, and JavaScript. It provides real-time translation across 30+ global languages with voice dictation, text-to-speech audio pronunciation, multi-engine translation support (MyMemory, Google Cloud, Microsoft Azure), translation history tracking, and a sleek glassmorphic UI.
 
+🌐 **Live Deployed Application**: [https://languagetranslator-swart.vercel.app/](https://languagetranslator-swart.vercel.app/)
+
 ---
 
 ## 🚀 Key Features & Highlights
@@ -42,7 +44,15 @@ CodeAlpha_Language_Translation_Tool/
 
 Since LinguaFuse is built using vanilla web technologies, running it on your system requires **zero setup, zero npm builds, and no framework dependencies**.
 
-### Step 1: Download or Clone the Repository
+### Option 1: Access Live Deployment (Instant)
+Access the live production build instantly on Vercel:
+👉 **[https://languagetranslator-swart.vercel.app/](https://languagetranslator-swart.vercel.app/)**
+
+---
+
+### Option 2: Run Locally from Source Code
+
+#### Step 1: Download or Clone the Repository
 
 * **Option A (Git Clone):**
   ```bash
@@ -58,16 +68,14 @@ Since LinguaFuse is built using vanilla web technologies, running it on your sys
      cd CodeAlpha_Language_Translation_Tool
      ```
 
----
+#### Step 2: Launch the Application
 
-### Step 2: Launch the Application
-
-#### Method A: Direct Browser Launch (Quickest)
+##### Method A: Direct Browser Launch (Quickest)
 1. Open your File Explorer and open the `CodeAlpha_Language_Translation_Tool` folder.
 2. Double-click `index.html`.
 3. It will open immediately in your web browser.
 
-#### Method B: Local Web Server (Recommended)
+##### Method B: Local Web Server (Recommended)
 Running via a local HTTP server guarantees that browser Web Speech API (microphone & text-to-speech) permissions operate without local file security (`file://`) restrictions:
 1. Open terminal in the project directory.
 2. Launch a lightweight HTTP server:
@@ -76,7 +84,7 @@ Running via a local HTTP server guarantees that browser Web Speech API (micropho
    ```
 3. Open your browser and navigate to `http://localhost:8080`.
 
-#### Method C: VS Code Live Server Extension
+##### Method C: VS Code Live Server Extension
 1. Open the `CodeAlpha_Language_Translation_Tool` directory in **Visual Studio Code**.
 2. Install the **Live Server** extension.
 3. Right-click `index.html` and select **Open with Live Server**.
