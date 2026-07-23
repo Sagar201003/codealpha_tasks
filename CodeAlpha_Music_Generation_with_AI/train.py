@@ -17,7 +17,7 @@ if sys.stdout.encoding and sys.stdout.encoding.lower() != 'utf-8':
 # Ensure local imports work
 sys.path.append(os.path.dirname(__file__))
 from utils.midi_parser import load_all_midis, prepare_sequences
-from models.music_lstm import MusicLSTM
+from models.music_lstm import AttentionMusicLSTM
 
 
 def train_music_model(
@@ -29,9 +29,9 @@ def train_music_model(
     save_path: str = "models/saved_model.pt",
     vocab_path: str = "models/vocab.json"
 ):
-    """Trains the MusicLSTM neural network on MIDI sequences."""
+    """Trains the AttentionMusicLSTM neural network on MIDI sequences."""
     print("=" * 60)
-    print("AI Music Generator - Model Training Pipeline")
+    print("AI Music Generator - Attention-Enhanced Model Training Pipeline")
     print("=" * 60)
 
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -53,13 +53,23 @@ def train_music_model(
     dataset = TensorDataset(X_tensor, y_tensor)
     dataloader = DataLoader(dataset, batch_size=batch_size, shuffle=True)
 
-    # Initialize LSTM model
-    model = MusicLSTM(vocab_size=vocab_size, embedding_dim=128, hidden_dim=256, num_layers=2, dropout=0.2).to(device)
+    # Initialize Attention-Enhanced LSTM model
+    model = AttentionMusicLSTM(
+        vocab_size=vocab_size,
+        embedding_dim=128,
+        hidden_dim=256,
+        num_layers=2,
+        num_heads=4,
+        dropout=0.2
+    ).to(device)
+
     criterion = nn.CrossEntropyLoss()
-    optimizer = optim.Adam(model.parameters(), lr=lr)
+    optimizer = optim.AdamW(model.parameters(), lr=lr, weight_decay=1e-4)
+    scheduler = optim.lr_scheduler.ReduceLROnPlateau(optimizer, mode='min', factor=0.5, patience=5)
 
     print(f"\nStarting training for {epochs} epochs | Vocabulary Size: {vocab_size} notes/chords...")
-    
+    best_loss = float('inf')
+
     for epoch in range(1, epochs + 1):
         model.train()
         total_loss = 0.0
@@ -71,36 +81,45 @@ def train_music_model(
             logits, _ = model(batch_X)
             loss = criterion(logits, batch_y)
             loss.backward()
-            optimizer.step()
+
+            # Gradient Clipping to prevent exploding gradients
+            nn.utils.clip_grad_norm_(model.parameters(), max_norm=1.0)
             
+            optimizer.step()
             total_loss += loss.item()
             
         avg_loss = total_loss / len(dataloader)
-        if epoch == 1 or epoch % 5 == 0 or epoch == epochs:
-            print(f"Epoch [{epoch:02d}/{epochs:02d}] -> Average Loss: {avg_loss:.4f}")
+        scheduler.step(avg_loss)
 
-    # Save model weights & vocabulary metadata
-    os.makedirs(os.path.dirname(save_path), exist_ok=True)
-    torch.save(model.state_dict(), save_path)
-    
+        if avg_loss < best_loss:
+            best_loss = avg_loss
+            os.makedirs(os.path.dirname(save_path), exist_ok=True)
+            torch.save(model.state_dict(), save_path)
+
+        if epoch == 1 or epoch % 5 == 0 or epoch == epochs:
+            current_lr = optimizer.param_groups[0]['lr']
+            print(f"Epoch [{epoch:02d}/{epochs:02d}] -> Loss: {avg_loss:.4f} (Best: {best_loss:.4f}) | LR: {current_lr:.5f}")
+
+    # Save vocabulary metadata
     vocab_data = {
         "note_to_int": note_to_int,
         "int_to_note": {str(k): v for k, v in int_to_note.items()},
         "vocab_size": vocab_size,
-        "seq_length": seq_length
+        "seq_length": seq_length,
+        "architecture": "AttentionMusicLSTM"
     }
     with open(vocab_path, "w", encoding="utf-8") as f:
         json.dump(vocab_data, f, indent=2)
 
     print(f"\nTraining Complete!")
-    print(f"Saved Trained Model: {save_path}")
+    print(f"Saved Best Model Checkpoint: {save_path}")
     print(f"Saved Vocabulary JSON: {vocab_path}")
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="Train PyTorch LSTM Music Generator")
+    parser = argparse.ArgumentParser(description="Train PyTorch Attention-Enhanced LSTM Music Generator")
     parser.add_argument("--midi_dir", type=str, default="data/midi", help="Directory containing training MIDI files")
-    parser.add_argument("--epochs", type=int, default=30, help="Number of training epochs")
+    parser.add_argument("--epochs", type=int, default=40, help="Number of training epochs")
     parser.add_argument("--batch_size", type=int, default=16, help="Batch size")
     parser.add_argument("--seq_length", type=int, default=16, help="Sequence window length")
     parser.add_argument("--lr", type=float, default=0.003, help="Learning rate")

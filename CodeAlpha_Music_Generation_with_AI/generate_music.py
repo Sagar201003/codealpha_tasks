@@ -14,7 +14,7 @@ if sys.stdout.encoding and sys.stdout.encoding.lower() != 'utf-8':
 
 # Ensure local imports work
 sys.path.append(os.path.dirname(__file__))
-from models.music_lstm import MusicLSTM, sample_with_temperature
+from models.music_lstm import AttentionMusicLSTM, sample_with_temperature
 from utils.midi_builder import create_midi_from_notes
 
 
@@ -23,12 +23,13 @@ def generate_music_sequence(
     vocab_path: str = "models/vocab.json",
     num_notes: int = 60,
     temperature: float = 0.8,
+    top_p: float = 0.9,
     instrument: str = "Piano",
     output_path: str = "data/generated_music.mid"
 ) -> str:
-    """Loads trained model, generates note predictions, and saves to MIDI file."""
+    """Loads trained AttentionMusicLSTM model, generates note predictions, and saves to MIDI file."""
     print("=" * 60)
-    print("AI Music Generator - Composition Pipeline")
+    print("AI Music Generator - Attention-Enhanced Composition Pipeline")
     print("=" * 60)
 
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -36,7 +37,7 @@ def generate_music_sequence(
     if not os.path.exists(model_path) or not os.path.exists(vocab_path):
         print("Warning: Model checkpoint or vocab JSON not found. Running training step first...")
         from train import train_music_model
-        train_music_model(epochs=15)
+        train_music_model(epochs=30)
 
     with open(vocab_path, "r", encoding="utf-8") as f:
         vocab_data = json.load(f)
@@ -46,26 +47,34 @@ def generate_music_sequence(
     vocab_size = vocab_data["vocab_size"]
     seq_length = vocab_data.get("seq_length", 16)
 
-    # Initialize model and load trained parameters
-    model = MusicLSTM(vocab_size=vocab_size, embedding_dim=128, hidden_dim=256, num_layers=2, dropout=0.2).to(device)
+    # Initialize Attention-Enhanced LSTM Model and load trained parameters
+    model = AttentionMusicLSTM(
+        vocab_size=vocab_size,
+        embedding_dim=128,
+        hidden_dim=256,
+        num_layers=2,
+        num_heads=4,
+        dropout=0.2
+    ).to(device)
+
     model.load_state_dict(torch.load(model_path, map_location=device))
     model.eval()
 
-    print(f"Loaded Trained Model: {model_path}")
+    print(f"Loaded Trained Model: {model_path} (Architecture: AttentionMusicLSTM)")
     print(f"Vocabulary Size: {vocab_size} | Sequence Length: {seq_length}")
-    print(f"Generation Settings -> Notes: {num_notes} | Temperature: {temperature} | Instrument: {instrument}")
+    print(f"Generation Settings -> Notes: {num_notes} | Temperature: {temperature} | Top-P: {top_p} | Instrument: {instrument}")
 
     # Initialize random seed sequence from vocabulary
     pattern = [random.randint(0, vocab_size - 1) for _ in range(seq_length)]
     prediction_output = []
 
-    print("\nGenerating musical notes...")
+    print("\nGenerating musical sequence with Self-Attention & Nucleus Sampling...")
     for note_index in range(num_notes):
         input_tensor = torch.tensor([pattern], dtype=torch.long).to(device)
         with torch.no_grad():
             logits, _ = model(input_tensor)
             
-        next_idx = sample_with_temperature(logits[0], temperature=temperature)
+        next_idx = sample_with_temperature(logits[0], temperature=temperature, top_p=top_p)
         result_note = int_to_note[next_idx]
         prediction_output.append(result_note)
 
@@ -82,11 +91,12 @@ def generate_music_sequence(
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="Generate AI Music Sequence to MIDI")
+    parser = argparse.ArgumentParser(description="Generate AI Music Sequence with Attention & Nucleus Sampling")
     parser.add_argument("--model_path", type=str, default="models/saved_model.pt", help="Path to trained PyTorch model")
     parser.add_argument("--vocab_path", type=str, default="models/vocab.json", help="Path to vocabulary JSON")
     parser.add_argument("--num_notes", type=int, default=60, help="Number of notes to generate")
     parser.add_argument("--temperature", type=float, default=0.8, help="Creativity temperature (0.1 to 1.5)")
+    parser.add_argument("--top_p", type=float, default=0.9, help="Top-P Nucleus sampling threshold (0.5 to 1.0)")
     parser.add_argument("--instrument", type=str, default="Piano", help="Instrument (Piano, Guitar, Organ, Violin, Synthesizer)")
     parser.add_argument("--output", type=str, default="data/generated_music.mid", help="Output MIDI filepath")
     args = parser.parse_args()
@@ -96,6 +106,7 @@ if __name__ == "__main__":
         vocab_path=args.vocab_path,
         num_notes=args.num_notes,
         temperature=args.temperature,
+        top_p=args.top_p,
         instrument=args.instrument,
         output_path=args.output
     )
