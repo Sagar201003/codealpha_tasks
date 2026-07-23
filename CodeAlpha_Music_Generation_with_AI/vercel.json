@@ -1,7 +1,5 @@
 {
-  "outputDirectory": "web",
-  "cleanUrls": true,
-  "rewrites": [
-    { "source": "/(.*)", "destination": "/web/$1" }
-  ]
+  "framework": null,
+  "buildCommand": null,
+  "outputDirectory": "web"
 }
