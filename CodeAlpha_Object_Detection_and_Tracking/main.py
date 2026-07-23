@@ -1,0 +1,155 @@
+import os
+import sys
+import time
+import argparse
+import cv2
+import numpy as np
+
+# Ensure local imports work
+sys.path.append(os.path.dirname(__file__))
+
+from models.detector import YOLOv8Detector
+from models.feature_extractor import ReIDFeatureExtractor
+from models.deepsort_tracker import DeepSORTTracker, Detection
+from utils.visualizer import Visualizer
+
+
+def run_object_detection_and_tracking(
+    source: str = "0",
+    conf_threshold: float = 0.4,
+    iou_threshold: float = 0.45,
+    classes: list = None,
+    show_trail: bool = True,
+    save_video: str = None,
+    display: bool = True
+):
+    """
+    Main Computer Vision Pipeline for Real-Time YOLOv8 + DeepSORT Object Detection & Tracking.
+    """
+    print("=" * 60)
+    print("OmniTrack AI - Real-Time YOLOv8 & DeepSORT Tracking Engine")
+    print("=" * 60)
+
+    # 1. Parse Video Source (0 for Webcam, or video file path)
+    if source.isdigit():
+        video_src = int(source)
+        src_name = f"Webcam Device #{source}"
+    else:
+        video_src = source
+        src_name = f"Video File ({source})"
+
+    cap = cv2.VideoCapture(video_src)
+    if not cap.isOpened():
+        print(f"Error: Unable to open video source '{source}'. Please check webcam or file path.")
+        return
+
+    width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH)) or 800
+    height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT)) or 450
+    fps_in = cap.get(cv2.CAP_PROP_FPS) or 30.0
+
+    print(f"Input Stream Loaded: {src_name} ({width}x{height} @ {fps_in:.1f} FPS)")
+
+    # 2. Initialize Models & Tracking Engines
+    detector = YOLOv8Detector(conf_threshold=conf_threshold, iou_threshold=iou_threshold)
+    feature_extractor = ReIDFeatureExtractor()
+    tracker = DeepSORTTracker(max_cosine_distance=0.2, max_age=30, n_init=3)
+    visualizer = Visualizer(max_trail_len=30)
+
+    # 3. Setup Video Writer if saving output
+    writer = None
+    if save_video:
+        os.makedirs(os.path.dirname(os.path.abspath(save_video)), exist_ok=True)
+        fourcc = cv2.VideoWriter_fourcc(*'mp4v')
+        writer = cv2.VideoWriter(save_video, fourcc, fps_in, (width, height))
+        print(f"Saving output video to: {save_video}")
+
+    print("\nProcessing frames... Press 'q' or ESC in OpenCV window to quit.")
+    frame_count = 0
+    start_time = time.time()
+
+    try:
+        while cap.isOpened():
+            ret, frame = cap.read()
+            if not ret or frame is None:
+                break
+
+            frame_count += 1
+            loop_start = time.time()
+
+            # Step A: Run YOLOv8 Object Detector
+            detections_meta = detector.detect(frame, target_classes=classes)
+
+            # Step B: Extract Re-ID Appearance Feature Vectors
+            bboxes_tlwh = [d["bbox_tlwh"] for d in detections_meta]
+            features = feature_extractor.extract_features(frame, bboxes_tlwh)
+
+            # Convert to DeepSORT Detection objects
+            detections = [
+                Detection(d["bbox_tlwh"], d["confidence"], feat, d["class_name"])
+                for d, feat in zip(detections_meta, features)
+            ]
+
+            # Step C: DeepSORT Motion Prediction & Cascaded Track Update
+            tracker.predict()
+            tracker.update(detections)
+
+            # Step D: Measure Frame Rate (FPS)
+            loop_time = time.time() - loop_start
+            current_fps = 1.0 / max(loop_time, 1e-5)
+
+            # Step E: Render Visual Annotations & HUD
+            annotated_frame = visualizer.draw_tracking_frame(
+                frame, tracker.tracks, fps=current_fps, show_trail=show_trail
+            )
+
+            # Step F: Write output or display window
+            if writer is not None:
+                writer.write(annotated_frame)
+
+            if display:
+                try:
+                    cv2.imshow("OmniTrack AI - YOLOv8 + DeepSORT Object Tracking", annotated_frame)
+                    key = cv2.waitKey(1) & 0xFF
+                    if key == ord('q') or key == 27: # 'q' or ESC
+                        print("User exit triggered.")
+                        break
+                except Exception:
+                    pass
+
+    except KeyboardInterrupt:
+        print("\nProcess interrupted by user.")
+    finally:
+        cap.release()
+        if writer is not None:
+            writer.release()
+        try:
+            cv2.destroyAllWindows()
+        except Exception:
+            pass
+
+        total_time = time.time() - start_time
+        avg_fps = frame_count / max(total_time, 1e-5)
+        print(f"\nProcessing Complete!")
+        print(f"Total Frames Processed: {frame_count} | Total Time: {total_time:.2f}s | Avg FPS: {avg_fps:.1f}")
+
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description="OmniTrack AI - Real-Time YOLOv8 & DeepSORT Object Tracking")
+    parser.add_argument("--source", type=str, default="data/sample_traffic.mp4", help="Video source: '0' for webcam, or video filepath")
+    parser.add_argument("--conf", type=float, default=0.4, help="Detection confidence threshold")
+    parser.add_argument("--iou", type=float, default=0.45, help="NMS IoU threshold")
+    parser.add_argument("--classes", nargs="+", default=None, help="Filter specific classes (e.g. --classes person car)")
+    parser.add_argument("--no_trail", action="store_true", help="Disable glowing trajectory trails")
+    parser.add_argument("--save_video", type=str, default=None, help="Output MP4 file path to save annotated video")
+    parser.add_argument("--no_display", action="store_true", help="Disable GUI display window for headless execution")
+    args = parser.parse_args()
+
+    run_object_detection_and_tracking(
+        source=args.source,
+        conf_threshold=args.conf,
+        iou_threshold=args.iou,
+        classes=args.classes,
+        show_trail=not args.no_trail,
+        save_video=args.save_video,
+        display=not args.no_display
+    )
