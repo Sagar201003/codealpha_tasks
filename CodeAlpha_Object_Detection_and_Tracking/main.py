@@ -15,18 +15,25 @@ from utils.visualizer import Visualizer
 
 
 # ==============================================================================
-# 📹 INPUT VIDEO FILE CONFIGURATION
-# You can change DEFAULT_VIDEO_PATH to any video file path you wish to test!
-# Examples:
-#   - "videos/test1.mp4"         (Your custom uploaded test video)
-#   - "data/sample_traffic.mp4"  (Sample traffic test video)
-#   - "0"                        (Live webcam feed)
+# 📹 INPUT VIDEO & MODEL CONFIGURATION
+# 
+# 1. DEFAULT_VIDEO_PATH: Path to input video or "0" for live webcam
+#    Examples: "videos/test1.mp4", "data/sample_traffic.mp4", "0"
+# 
+# 2. DEFAULT_MODEL: YOLO Pretrained Weight Tier
+#    - "yolov8n.pt"  (Nano  - 6 MB)  -> Blazing Fast (Default)
+#    - "yolov8s.pt"  (Small - 22 MB) -> Fast & Higher Accuracy
+#    - "yolov8m.pt"  (Medium - 50 MB)-> Balanced High Precision
+#    - "yolov8l.pt"  (Large - 83 MB) -> High Accuracy for Small / Far Objects
+#    - "yolov8x.pt"  (X-Large- 130 MB)-> Maximum State-of-the-Art Precision
 # ==============================================================================
 DEFAULT_VIDEO_PATH = "videos/test1.mp4"
+DEFAULT_MODEL = "yolov8n.pt"
 
 
 def run_object_detection_and_tracking(
     source: str = DEFAULT_VIDEO_PATH,
+    model_name: str = DEFAULT_MODEL,
     conf_threshold: float = 0.4,
     iou_threshold: float = 0.45,
     classes: list = None,
@@ -59,9 +66,10 @@ def run_object_detection_and_tracking(
     fps_in = cap.get(cv2.CAP_PROP_FPS) or 30.0
 
     print(f"Input Stream Loaded: {src_name} ({width}x{height} @ {fps_in:.1f} FPS)")
+    print(f"Model Selection: {model_name}")
 
     # 2. Initialize Models & Tracking Engines
-    detector = YOLOv8Detector(conf_threshold=conf_threshold, iou_threshold=iou_threshold)
+    detector = YOLOv8Detector(model_name=model_name, conf_threshold=conf_threshold, iou_threshold=iou_threshold)
     feature_extractor = ReIDFeatureExtractor()
     tracker = DeepSORTTracker(max_cosine_distance=0.2, max_age=30, n_init=3)
     visualizer = Visualizer(max_trail_len=30)
@@ -147,6 +155,7 @@ def run_object_detection_and_tracking(
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="OmniTrack AI - Real-Time YOLOv8 & DeepSORT Object Tracking")
     parser.add_argument("--source", type=str, default=DEFAULT_VIDEO_PATH, help=f"Video source path or '0' for webcam (default: {DEFAULT_VIDEO_PATH})")
+    parser.add_argument("--model", type=str, default=DEFAULT_MODEL, help=f"YOLO model weight (yolov8n.pt, yolov8s.pt, yolov8m.pt, yolov8l.pt, yolov8x.pt)")
     parser.add_argument("--conf", type=float, default=0.4, help="Detection confidence threshold")
     parser.add_argument("--iou", type=float, default=0.45, help="NMS IoU threshold")
     parser.add_argument("--classes", nargs="+", default=None, help="Filter specific classes (e.g. --classes person car)")
@@ -157,6 +166,7 @@ if __name__ == "__main__":
 
     run_object_detection_and_tracking(
         source=args.source,
+        model_name=args.model,
         conf_threshold=args.conf,
         iou_threshold=args.iou,
         classes=args.classes,
