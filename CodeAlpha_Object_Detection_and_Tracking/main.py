@@ -15,29 +15,39 @@ from utils.visualizer import Visualizer
 
 
 # ==============================================================================
-# 📹 INPUT VIDEO, OUTPUT & MODEL CONFIGURATION
+# 📹 INPUT VIDEO, MODEL & TRACKER CONFIGURATION
 # 
 # 1. DEFAULT_VIDEO_PATH: Path to input video or "0" for live webcam
 #    Examples: "videos/test1.mp4", "data/sample_traffic.mp4", "0"
 # 
-# 2. DEFAULT_OUTPUT_PATH: Path where output result video will be saved
-#    Examples: "output/out.mp4"
-# 
-# 3. DEFAULT_MODEL: YOLO Pretrained Weight Tier
+# 2. DEFAULT_MODEL: YOLO Pretrained Weight Tier
 #    - "yolov8n.pt"  (Nano  - 6 MB)  -> Blazing Fast Real-Time
 #    - "yolov8s.pt"  (Small - 22 MB) -> Fast & Higher Accuracy
 #    - "yolov8m.pt"  (Medium - 50 MB)-> Balanced High Precision
 #    - "yolov8l.pt"  (Large - 83 MB) -> High Accuracy for Small Objects [Default]
 #    - "yolov8x.pt"  (X-Large- 130 MB)-> Maximum Precision
 # 
-# 4. DEFAULT_TRACKER: Object Tracking Engine
+# 3. DEFAULT_TRACKER: Object Tracking Engine
 #    - "bytetrack" (High-Speed Native ByteTrack, 30+ FPS, Zero ID Jumping) [DEFAULT]
 #    - "deepsort"  (PyTorch CNN Re-ID + 8-State Kalman Association)
 # ==============================================================================
 DEFAULT_VIDEO_PATH = "videos/test1.mp4"
-DEFAULT_OUTPUT_PATH = "output/out.mp4"
 DEFAULT_MODEL = "yolov8l.pt"
 DEFAULT_TRACKER = "bytetrack"
+
+
+def get_auto_output_path(source_path: str) -> str:
+    """
+    Computes dynamic output filename inside output/ directory.
+    Example: 'videos/test1.mp4' -> 'output/test1_out.mp4'
+             'videos/test2.mp4' -> 'output/test2_out.mp4'
+             '0'                -> 'output/webcam_0_out.mp4'
+    """
+    if str(source_path).isdigit():
+        stem = f"webcam_{source_path}"
+    else:
+        stem = os.path.splitext(os.path.basename(source_path))[0]
+    return f"output/{stem}_out.mp4"
 
 
 def run_object_detection_and_tracking(
@@ -48,7 +58,7 @@ def run_object_detection_and_tracking(
     iou_threshold: float = 0.45,
     classes: list = None,
     show_trail: bool = True,
-    save_video: str = DEFAULT_OUTPUT_PATH,
+    save_video: str = "AUTO",
     display: bool = True
 ):
     """
@@ -78,7 +88,13 @@ def run_object_detection_and_tracking(
     print(f"Input Stream Loaded: {src_name} ({width}x{height} @ {fps_in:.1f} FPS)")
     print(f"Model Selection: {model_name} | Tracker: {tracker_type.upper()} | Conf: {conf_threshold}")
 
-    # 2. Initialize Models & Tracking Engines
+    # 2. Compute Output Destination (Auto-named output/<video>_out.mp4, overwriting if re-run)
+    if save_video and (save_video.upper() == "AUTO" or save_video == "True"):
+        save_video_path = get_auto_output_path(source)
+    else:
+        save_video_path = save_video
+
+    # 3. Initialize Models & Tracking Engines
     detector = YOLOv8Detector(model_name=model_name, conf_threshold=conf_threshold, iou_threshold=iou_threshold)
     visualizer = Visualizer(max_trail_len=15)
 
@@ -86,13 +102,13 @@ def run_object_detection_and_tracking(
         feature_extractor = ReIDFeatureExtractor()
         deepsort_tracker = DeepSORTTracker(max_cosine_distance=0.2, max_age=30, n_init=3)
 
-    # 3. Setup Video Writer if saving output
+    # 4. Setup Video Writer if saving output
     writer = None
-    if save_video:
-        os.makedirs(os.path.dirname(os.path.abspath(save_video)), exist_ok=True)
+    if save_video_path:
+        os.makedirs(os.path.dirname(os.path.abspath(save_video_path)), exist_ok=True)
         fourcc = cv2.VideoWriter_fourcc(*'mp4v')
-        writer = cv2.VideoWriter(save_video, fourcc, fps_in, (width, height))
-        print(f"Output Video Destination: {save_video}")
+        writer = cv2.VideoWriter(save_video_path, fourcc, fps_in, (width, height))
+        print(f"Output Result Destination: {save_video_path}")
 
     print("\nProcessing frames... Press 'q' or ESC in OpenCV window to quit.")
     frame_count = 0
@@ -167,14 +183,14 @@ def run_object_detection_and_tracking(
         avg_fps = frame_count / max(total_time, 1e-5)
         print(f"\nProcessing Complete!")
         print(f"Total Frames Processed: {frame_count} | Total Time: {total_time:.2f}s | Avg FPS: {avg_fps:.1f}")
-        if save_video:
-            print(f"Result Saved To: {save_video}")
+        if save_video_path:
+            print(f"Result Saved To: {save_video_path}")
 
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="OmniTrack AI - Real-Time YOLOv8 Object Tracking")
     parser.add_argument("--source", type=str, default=DEFAULT_VIDEO_PATH, help=f"Video source path or '0' for webcam (default: {DEFAULT_VIDEO_PATH})")
-    parser.add_argument("--save_video", type=str, default=DEFAULT_OUTPUT_PATH, help=f"Output MP4 file path to save annotated result video (default: {DEFAULT_OUTPUT_PATH})")
+    parser.add_argument("--save_video", type=str, nargs="?", const="AUTO", default="AUTO", help="Save output MP4 video (default: auto-names to output/<videoname>_out.mp4)")
     parser.add_argument("--model", type=str, default=DEFAULT_MODEL, help=f"YOLO model weight (yolov8n.pt, yolov8s.pt, yolov8m.pt, yolov8l.pt, yolov8x.pt)")
     parser.add_argument("--tracker", type=str, default=DEFAULT_TRACKER, choices=["bytetrack", "deepsort"], help="Tracker engine: 'bytetrack' (30+ FPS, default) or 'deepsort'")
     parser.add_argument("--conf", type=float, default=0.30, help="Detection confidence threshold (default: 0.30)")
