@@ -19,6 +19,9 @@ desktop.ini
 __pycache__/
 *.pyc
 
+# Model weights
+*.pt
+
 # Large video files
 *.mp4
 !data/sample_traffic.mp4

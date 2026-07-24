@@ -32,7 +32,7 @@ from utils.visualizer import Visualizer
 #    - "deepsort"  (PyTorch CNN Re-ID + 8-State Kalman Association)
 # ==============================================================================
 DEFAULT_VIDEO_PATH = "videos/test1.mp4"
-DEFAULT_MODEL = "yolov8n.pt"
+DEFAULT_MODEL = "yolov8l.pt"
 DEFAULT_TRACKER = "bytetrack"
 
 
