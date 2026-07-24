@@ -25,7 +25,7 @@ def get_color_for_id(track_id: int) -> tuple:
 
 
 class Visualizer:
-    """OpenCV Renderer for Bounding Boxes, Track IDs, Trajectory Trails & HUD."""
+    """OpenCV Renderer for Bounding Boxes, Track IDs, Ground Motion Trails & HUD."""
 
     def __init__(self, max_trail_len: int = 15):
         self.max_trail_len = max_trail_len
@@ -38,7 +38,7 @@ class Visualizer:
         fps: float = 0.0,
         show_trail: bool = True
     ) -> np.ndarray:
-        """Renders bounding boxes, Track ID badges, motion trajectories, and HUD stats onto frame."""
+        """Renders bounding boxes, Track ID badges, ground motion trails, and HUD stats onto frame."""
         annotated = frame.copy()
         h_img, w_img = annotated.shape[:2]
 
@@ -73,10 +73,11 @@ class Visualizer:
             x1, y1 = max(0, int(x1)), max(0, int(y1))
             x2, y2 = min(w_img, int(x2)), min(h_img, int(y2))
 
-            center_x = (x1 + x2) // 2
-            center_y = (y1 + y2) // 2
+            # Ground contact point (bottom-center of bounding box touching road pavement)
+            ground_x = (x1 + x2) // 2
+            ground_y = y2
 
-            # 1. Trajectory Trails (Only for valid tracked objects)
+            # 1. Ground Motion Trails (Lies flat on road pavement under wheels)
             if show_trail and track_id >= 0:
                 if track_id not in self.track_trails:
                     self.track_trails[track_id] = []
@@ -84,11 +85,11 @@ class Visualizer:
                 # Distance jump protection
                 if len(self.track_trails[track_id]) > 0:
                     last_x, last_y = self.track_trails[track_id][-1]
-                    dist = np.hypot(center_x - last_x, center_y - last_y)
-                    if dist > 60: # If position jumped > 60px, reset trail history
+                    dist = np.hypot(ground_x - last_x, ground_y - last_y)
+                    if dist > 60: # Reset if position jumped > 60px
                         self.track_trails[track_id] = []
 
-                self.track_trails[track_id].append((center_x, center_y))
+                self.track_trails[track_id].append((ground_x, ground_y))
                 if len(self.track_trails[track_id]) > self.max_trail_len:
                     self.track_trails[track_id].pop(0)
 
@@ -96,6 +97,7 @@ class Visualizer:
                 for i in range(1, len(pts)):
                     thickness = int(np.sqrt(self.max_trail_len / float(i + 1)) * 2.0)
                     cv2.line(annotated, pts[i - 1], pts[i], color, max(1, thickness))
+                    cv2.circle(annotated, pts[i], max(1, thickness // 2), color, -1)
 
             # 2. Bounding Box (Corner lines style)
             cv2.rectangle(annotated, (x1, y1), (x2, y2), color, 2)

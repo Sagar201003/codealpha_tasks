@@ -6,7 +6,7 @@ import torch
 class YOLOv8Detector:
     """YOLOv8 Object Detector & High-Speed ByteTrack Tracker wrapper using Ultralytics."""
 
-    def __init__(self, model_name: str = "yolov8n.pt", conf_threshold: float = 0.4, iou_threshold: float = 0.45):
+    def __init__(self, model_name: str = "yolov8n.pt", conf_threshold: float = 0.25, iou_threshold: float = 0.45):
         self.conf_threshold = conf_threshold
         self.iou_threshold = iou_threshold
         self.yolo_model = None

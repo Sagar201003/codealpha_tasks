@@ -40,7 +40,7 @@ def run_object_detection_and_tracking(
     source: str = DEFAULT_VIDEO_PATH,
     model_name: str = DEFAULT_MODEL,
     tracker_type: str = DEFAULT_TRACKER,
-    conf_threshold: float = 0.4,
+    conf_threshold: float = 0.25,
     iou_threshold: float = 0.45,
     classes: list = None,
     show_trail: bool = True,
@@ -72,7 +72,7 @@ def run_object_detection_and_tracking(
     fps_in = cap.get(cv2.CAP_PROP_FPS) or 30.0
 
     print(f"Input Stream Loaded: {src_name} ({width}x{height} @ {fps_in:.1f} FPS)")
-    print(f"Model Selection: {model_name} | Tracker: {tracker_type.upper()}")
+    print(f"Model Selection: {model_name} | Tracker: {tracker_type.upper()} | Conf: {conf_threshold}")
 
     # 2. Initialize Models & Tracking Engines
     detector = YOLOv8Detector(model_name=model_name, conf_threshold=conf_threshold, iou_threshold=iou_threshold)
@@ -170,7 +170,7 @@ if __name__ == "__main__":
     parser.add_argument("--source", type=str, default=DEFAULT_VIDEO_PATH, help=f"Video source path or '0' for webcam (default: {DEFAULT_VIDEO_PATH})")
     parser.add_argument("--model", type=str, default=DEFAULT_MODEL, help=f"YOLO model weight (yolov8n.pt, yolov8s.pt, yolov8m.pt, yolov8l.pt, yolov8x.pt)")
     parser.add_argument("--tracker", type=str, default=DEFAULT_TRACKER, choices=["bytetrack", "deepsort"], help="Tracker engine: 'bytetrack' (30+ FPS, default) or 'deepsort'")
-    parser.add_argument("--conf", type=float, default=0.4, help="Detection confidence threshold")
+    parser.add_argument("--conf", type=float, default=0.25, help="Detection confidence threshold (default: 0.25)")
     parser.add_argument("--iou", type=float, default=0.45, help="NMS IoU threshold")
     parser.add_argument("--classes", nargs="+", default=None, help="Filter specific classes (e.g. --classes person car)")
     parser.add_argument("--no_trail", action="store_true", help="Disable glowing trajectory trails")
