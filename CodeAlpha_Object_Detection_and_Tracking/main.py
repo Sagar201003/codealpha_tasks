@@ -14,8 +14,19 @@ from models.deepsort_tracker import DeepSORTTracker, Detection
 from utils.visualizer import Visualizer
 
 
+# ==============================================================================
+# 📹 INPUT VIDEO FILE CONFIGURATION
+# You can change DEFAULT_VIDEO_PATH to any video file path you wish to test!
+# Examples:
+#   - "videos/test1.mp4"         (Your custom uploaded test video)
+#   - "data/sample_traffic.mp4"  (Sample traffic test video)
+#   - "0"                        (Live webcam feed)
+# ==============================================================================
+DEFAULT_VIDEO_PATH = "videos/test1.mp4"
+
+
 def run_object_detection_and_tracking(
-    source: str = "0",
+    source: str = DEFAULT_VIDEO_PATH,
     conf_threshold: float = 0.4,
     iou_threshold: float = 0.45,
     classes: list = None,
@@ -31,7 +42,7 @@ def run_object_detection_and_tracking(
     print("=" * 60)
 
     # 1. Parse Video Source (0 for Webcam, or video file path)
-    if source.isdigit():
+    if str(source).isdigit():
         video_src = int(source)
         src_name = f"Webcam Device #{source}"
     else:
@@ -135,7 +146,7 @@ def run_object_detection_and_tracking(
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="OmniTrack AI - Real-Time YOLOv8 & DeepSORT Object Tracking")
-    parser.add_argument("--source", type=str, default="data/sample_traffic.mp4", help="Video source: '0' for webcam, or video filepath")
+    parser.add_argument("--source", type=str, default=DEFAULT_VIDEO_PATH, help=f"Video source path or '0' for webcam (default: {DEFAULT_VIDEO_PATH})")
     parser.add_argument("--conf", type=float, default=0.4, help="Detection confidence threshold")
     parser.add_argument("--iou", type=float, default=0.45, help="NMS IoU threshold")
     parser.add_argument("--classes", nargs="+", default=None, help="Filter specific classes (e.g. --classes person car)")

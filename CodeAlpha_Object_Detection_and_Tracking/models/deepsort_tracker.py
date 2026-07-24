@@ -83,6 +83,9 @@ class Detection:
         self.feature = np.asarray(feature, dtype=np.float32)
         self.class_name = class_name
 
+    def to_tlwh(self) -> np.ndarray:
+        return self.tlwh.copy()
+
     def to_tlbr(self) -> np.ndarray:
         ret = self.tlwh.copy()
         ret[2:] += ret[:2]

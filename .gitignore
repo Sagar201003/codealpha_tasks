@@ -19,3 +19,7 @@ desktop.ini
 __pycache__/
 *.pyc
 
+# Large video files
+*.mp4
+!data/sample_traffic.mp4
+!data/sample_pedestrians.mp4
