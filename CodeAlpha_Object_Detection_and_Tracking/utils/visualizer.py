@@ -65,6 +65,14 @@ class Visualizer:
             if show_trail:
                 if track_id not in self.track_trails:
                     self.track_trails[track_id] = []
+                
+                # Check distance jump from last point to avoid wild diagonal streak lines
+                if len(self.track_trails[track_id]) > 0:
+                    last_x, last_y = self.track_trails[track_id][-1]
+                    dist = np.hypot(center_x - last_x, center_y - last_y)
+                    if dist > 80: # If position jumped > 80px, reset trail history
+                        self.track_trails[track_id] = []
+
                 self.track_trails[track_id].append((center_x, center_y))
                 if len(self.track_trails[track_id]) > self.max_trail_len:
                     self.track_trails[track_id].pop(0)
@@ -98,7 +106,11 @@ class Visualizer:
             cv2.rectangle(annotated, (x1, badge_y - txt_h - 4), (x1 + txt_w + 10, badge_y + 4), color, -1)
             cv2.putText(annotated, label_text, (x1 + 5, badge_y), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 2)
 
-        # 4. HUD Top Bar Performance Stats
+        # 4. Purge stale track trails
+        active_ids = {t.track_id for t in tracks if t.is_confirmed()}
+        self.track_trails = {k: v for k, v in self.track_trails.items() if k in active_ids}
+
+        # 5. HUD Top Bar Performance Stats
         hud_bg = np.zeros((50, w_img, 3), dtype=np.uint8)
         cv2.addWeighted(annotated[0:50, 0:w_img], 0.3, hud_bg, 0.7, 0, annotated[0:50, 0:w_img])
 
