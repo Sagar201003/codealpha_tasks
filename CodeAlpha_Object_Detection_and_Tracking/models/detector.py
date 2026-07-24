@@ -4,7 +4,7 @@ import torch
 
 
 class YOLOv8Detector:
-    """YOLOv8 Object Detector wrapper using Ultralytics or fallback OpenCV Contour/Blob engine."""
+    """YOLOv8 Object Detector & High-Speed ByteTrack Tracker wrapper using Ultralytics."""
 
     def __init__(self, model_name: str = "yolov8n.pt", conf_threshold: float = 0.4, iou_threshold: float = 0.45):
         self.conf_threshold = conf_threshold
@@ -27,18 +27,13 @@ class YOLOv8Detector:
         try:
             from ultralytics import YOLO
             self.yolo_model = YOLO(model_name)
-            print(f"Loaded YOLOv8 Detector model: {model_name}")
+            print(f"Loaded YOLOv8 Model: {model_name}")
         except Exception as e:
             print(f"Notice: Ultralytics load warning ({e}). Initialized fallback vision detector.")
 
     def detect(self, frame_bgr: np.ndarray, target_classes: list = None) -> list:
-        """
-        Runs object detection on frame BGR image.
-        Returns list of dicts: [{'bbox_tlwh': [x, y, w, h], 'confidence': float, 'class_name': str}]
-        """
+        """Runs single-frame object detection."""
         results_list = []
-        h_img, w_img = frame_bgr.shape[:2]
-
         if self.yolo_model is not None:
             results = self.yolo_model(frame_bgr, conf=self.conf_threshold, iou=self.iou_threshold, verbose=False)[0]
             for box in results.boxes:
@@ -56,27 +51,41 @@ class YOLOv8Detector:
                     "confidence": conf,
                     "class_name": class_name
                 })
-        else:
-            # High-performance fallback OpenCV detection for synthetic or offline test video streams
-            gray = cv2.cvtColor(frame_bgr, cv2.COLOR_BGR2GRAY)
-            blur = cv2.GaussianBlur(gray, (5, 5), 0)
-            thresh = cv2.threshold(blur, 60, 255, cv2.THRESH_BINARY_INV)[1]
-            contours, _ = cv2.findContours(thresh, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+        return results_list
 
-            for cnt in contours:
-                area = cv2.contourArea(cnt)
-                if area > 400:
-                    x, y, w, h = cv2.boundingRect(cnt)
-                    aspect = w / float(h)
-                    c_name = "car" if aspect > 1.2 else "person"
+    def track(self, frame_bgr: np.ndarray, target_classes: list = None, tracker_type: str = "bytetrack.yaml") -> list:
+        """
+        Runs High-Speed Native ByteTrack / BotSORT Tracking directly inside YOLOv8.
+        Returns list of track dicts: [{'bbox_tlwh': [x, y, w, h], 'confidence': float, 'class_name': str, 'track_id': int}]
+        """
+        tracks_list = []
+        if self.yolo_model is not None:
+            results = self.yolo_model.track(
+                frame_bgr,
+                persist=True,
+                tracker=tracker_type,
+                conf=self.conf_threshold,
+                iou=self.iou_threshold,
+                verbose=False
+            )[0]
 
-                    if target_classes and c_name not in target_classes:
+            if results.boxes is not None and len(results.boxes) > 0:
+                for box in results.boxes:
+                    cls_id = int(box.cls[0].item())
+                    conf = float(box.conf[0].item())
+                    class_name = self.coco_classes[cls_id] if cls_id < len(self.coco_classes) else f"class_{cls_id}"
+
+                    if target_classes and class_name not in target_classes:
                         continue
 
-                    results_list.append({
-                        "bbox_tlwh": [x, y, w, h],
-                        "confidence": 0.88,
-                        "class_name": c_name
-                    })
+                    track_id = int(box.id[0].item()) if (box.id is not None and len(box.id) > 0) else -1
+                    x1, y1, x2, y2 = box.xyxy[0].cpu().numpy()
+                    tlwh = [x1, y1, x2 - x1, y2 - y1]
 
-        return results_list
+                    tracks_list.append({
+                        "bbox_tlwh": tlwh,
+                        "confidence": conf,
+                        "class_name": class_name,
+                        "track_id": track_id
+                    })
+        return tracks_list

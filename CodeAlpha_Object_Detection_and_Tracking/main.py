@@ -15,25 +15,31 @@ from utils.visualizer import Visualizer
 
 
 # ==============================================================================
-# 📹 INPUT VIDEO & MODEL CONFIGURATION
+# 📹 INPUT VIDEO, MODEL & TRACKER CONFIGURATION
 # 
 # 1. DEFAULT_VIDEO_PATH: Path to input video or "0" for live webcam
 #    Examples: "videos/test1.mp4", "data/sample_traffic.mp4", "0"
 # 
 # 2. DEFAULT_MODEL: YOLO Pretrained Weight Tier
-#    - "yolov8n.pt"  (Nano  - 6 MB)  -> Blazing Fast (Default)
+#    - "yolov8n.pt"  (Nano  - 6 MB)  -> Blazing Fast Real-Time (Default)
 #    - "yolov8s.pt"  (Small - 22 MB) -> Fast & Higher Accuracy
 #    - "yolov8m.pt"  (Medium - 50 MB)-> Balanced High Precision
-#    - "yolov8l.pt"  (Large - 83 MB) -> High Accuracy for Small / Far Objects
-#    - "yolov8x.pt"  (X-Large- 130 MB)-> Maximum State-of-the-Art Precision
+#    - "yolov8l.pt"  (Large - 83 MB) -> High Accuracy for Small Objects
+#    - "yolov8x.pt"  (X-Large- 130 MB)-> Maximum Precision
+# 
+# 3. DEFAULT_TRACKER: Object Tracking Engine
+#    - "bytetrack" (High-Speed Native ByteTrack, 30+ FPS, Zero ID Jumping) [DEFAULT]
+#    - "deepsort"  (PyTorch CNN Re-ID + 8-State Kalman Association)
 # ==============================================================================
 DEFAULT_VIDEO_PATH = "videos/test1.mp4"
 DEFAULT_MODEL = "yolov8n.pt"
+DEFAULT_TRACKER = "bytetrack"
 
 
 def run_object_detection_and_tracking(
     source: str = DEFAULT_VIDEO_PATH,
     model_name: str = DEFAULT_MODEL,
+    tracker_type: str = DEFAULT_TRACKER,
     conf_threshold: float = 0.4,
     iou_threshold: float = 0.45,
     classes: list = None,
@@ -42,10 +48,10 @@ def run_object_detection_and_tracking(
     display: bool = True
 ):
     """
-    Main Computer Vision Pipeline for Real-Time YOLOv8 + DeepSORT Object Detection & Tracking.
+    Main Computer Vision Pipeline for Real-Time YOLOv8 + ByteTrack / DeepSORT Object Tracking.
     """
     print("=" * 60)
-    print("OmniTrack AI - Real-Time YOLOv8 & DeepSORT Tracking Engine")
+    print(f"OmniTrack AI - Real-Time YOLOv8 & {tracker_type.upper()} Engine")
     print("=" * 60)
 
     # 1. Parse Video Source (0 for Webcam, or video file path)
@@ -66,13 +72,15 @@ def run_object_detection_and_tracking(
     fps_in = cap.get(cv2.CAP_PROP_FPS) or 30.0
 
     print(f"Input Stream Loaded: {src_name} ({width}x{height} @ {fps_in:.1f} FPS)")
-    print(f"Model Selection: {model_name}")
+    print(f"Model Selection: {model_name} | Tracker: {tracker_type.upper()}")
 
     # 2. Initialize Models & Tracking Engines
     detector = YOLOv8Detector(model_name=model_name, conf_threshold=conf_threshold, iou_threshold=iou_threshold)
-    feature_extractor = ReIDFeatureExtractor()
-    tracker = DeepSORTTracker(max_cosine_distance=0.2, max_age=30, n_init=3)
-    visualizer = Visualizer(max_trail_len=30)
+    visualizer = Visualizer(max_trail_len=15)
+
+    if tracker_type.lower() == "deepsort":
+        feature_extractor = ReIDFeatureExtractor()
+        deepsort_tracker = DeepSORTTracker(max_cosine_distance=0.2, max_age=30, n_init=3)
 
     # 3. Setup Video Writer if saving output
     writer = None
@@ -95,39 +103,44 @@ def run_object_detection_and_tracking(
             frame_count += 1
             loop_start = time.time()
 
-            # Step A: Run YOLOv8 Object Detector
-            detections_meta = detector.detect(frame, target_classes=classes)
+            if tracker_type.lower() == "deepsort":
+                # Step A: Run YOLOv8 Object Detector
+                detections_meta = detector.detect(frame, target_classes=classes)
 
-            # Step B: Extract Re-ID Appearance Feature Vectors
-            bboxes_tlwh = [d["bbox_tlwh"] for d in detections_meta]
-            features = feature_extractor.extract_features(frame, bboxes_tlwh)
+                # Step B: Extract Re-ID Appearance Feature Vectors
+                bboxes_tlwh = [d["bbox_tlwh"] for d in detections_meta]
+                features = feature_extractor.extract_features(frame, bboxes_tlwh)
 
-            # Convert to DeepSORT Detection objects
-            detections = [
-                Detection(d["bbox_tlwh"], d["confidence"], feat, d["class_name"])
-                for d, feat in zip(detections_meta, features)
-            ]
+                # Convert to DeepSORT Detection objects
+                detections = [
+                    Detection(d["bbox_tlwh"], d["confidence"], feat, d["class_name"])
+                    for d, feat in zip(detections_meta, features)
+                ]
 
-            # Step C: DeepSORT Motion Prediction & Cascaded Track Update
-            tracker.predict()
-            tracker.update(detections)
+                # Step C: DeepSORT Motion Prediction & Cascaded Track Update
+                deepsort_tracker.predict()
+                deepsort_tracker.update(detections)
+                active_tracks = deepsort_tracker.tracks
+            else:
+                # High-Speed Native ByteTrack Tracking Engine (Default - 30+ FPS)
+                active_tracks = detector.track(frame, target_classes=classes, tracker_type="bytetrack.yaml")
 
-            # Step D: Measure Frame Rate (FPS)
+            # Measure Frame Rate (FPS)
             loop_time = time.time() - loop_start
             current_fps = 1.0 / max(loop_time, 1e-5)
 
-            # Step E: Render Visual Annotations & HUD
+            # Render Visual Annotations & HUD
             annotated_frame = visualizer.draw_tracking_frame(
-                frame, tracker.tracks, fps=current_fps, show_trail=show_trail
+                frame, active_tracks, fps=current_fps, show_trail=show_trail
             )
 
-            # Step F: Write output or display window
+            # Write output or display window
             if writer is not None:
                 writer.write(annotated_frame)
 
             if display:
                 try:
-                    cv2.imshow("OmniTrack AI - YOLOv8 + DeepSORT Object Tracking", annotated_frame)
+                    cv2.imshow("OmniTrack AI - YOLOv8 + ByteTrack Object Tracking", annotated_frame)
                     key = cv2.waitKey(1) & 0xFF
                     if key == ord('q') or key == 27: # 'q' or ESC
                         print("User exit triggered.")
@@ -153,9 +166,10 @@ def run_object_detection_and_tracking(
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="OmniTrack AI - Real-Time YOLOv8 & DeepSORT Object Tracking")
+    parser = argparse.ArgumentParser(description="OmniTrack AI - Real-Time YOLOv8 Object Tracking")
     parser.add_argument("--source", type=str, default=DEFAULT_VIDEO_PATH, help=f"Video source path or '0' for webcam (default: {DEFAULT_VIDEO_PATH})")
     parser.add_argument("--model", type=str, default=DEFAULT_MODEL, help=f"YOLO model weight (yolov8n.pt, yolov8s.pt, yolov8m.pt, yolov8l.pt, yolov8x.pt)")
+    parser.add_argument("--tracker", type=str, default=DEFAULT_TRACKER, choices=["bytetrack", "deepsort"], help="Tracker engine: 'bytetrack' (30+ FPS, default) or 'deepsort'")
     parser.add_argument("--conf", type=float, default=0.4, help="Detection confidence threshold")
     parser.add_argument("--iou", type=float, default=0.45, help="NMS IoU threshold")
     parser.add_argument("--classes", nargs="+", default=None, help="Filter specific classes (e.g. --classes person car)")
@@ -167,6 +181,7 @@ if __name__ == "__main__":
     run_object_detection_and_tracking(
         source=args.source,
         model_name=args.model,
+        tracker_type=args.tracker,
         conf_threshold=args.conf,
         iou_threshold=args.iou,
         classes=args.classes,

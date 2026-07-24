@@ -19,13 +19,15 @@ COLOR_PALETTE = [
 
 def get_color_for_id(track_id: int) -> tuple:
     """Returns persistent BGR color tuple based on Track ID."""
+    if track_id < 0:
+        return (128, 128, 128)
     return COLOR_PALETTE[track_id % len(COLOR_PALETTE)]
 
 
 class Visualizer:
-    """OpenCV Renderer for Bounding Boxes, DeepSORT Track IDs, Trajectory Trails & HUD."""
+    """OpenCV Renderer for Bounding Boxes, Track IDs, Trajectory Trails & HUD."""
 
-    def __init__(self, max_trail_len: int = 30):
+    def __init__(self, max_trail_len: int = 15):
         self.max_trail_len = max_trail_len
         self.track_trails = {}
 
@@ -41,36 +43,49 @@ class Visualizer:
         h_img, w_img = annotated.shape[:2]
 
         active_counts = {}
+        active_ids = set()
 
         for track in tracks:
-            if not track.is_confirmed() or track.time_since_update > 1:
-                continue
+            # Handle both DeepSORT Track objects and dicts / ByteTrack objects
+            if isinstance(track, dict):
+                track_id = track.get("track_id", -1)
+                class_name = track.get("class_name", "object")
+                conf = track.get("confidence", 1.0)
+                tlwh = track.get("bbox_tlwh", [0, 0, 1, 1])
+                x1, y1, w, h = tlwh
+                x2, y2 = x1 + w, y1 + h
+            else:
+                if hasattr(track, "is_confirmed") and not track.is_confirmed():
+                    continue
+                if hasattr(track, "time_since_update") and track.time_since_update > 1:
+                    continue
 
-            track_id = track.track_id
-            class_name = track.class_name
-            conf = track.confidence
+                track_id = getattr(track, "track_id", -1)
+                class_name = getattr(track, "class_name", "object")
+                conf = getattr(track, "confidence", 1.0)
+                x1, y1, x2, y2 = [int(v) for v in track.to_tlbr()]
+
             color = get_color_for_id(track_id)
-
             active_counts[class_name] = active_counts.get(class_name, 0) + 1
+            if track_id >= 0:
+                active_ids.add(track_id)
 
-            # Get bounding box [x1, y1, x2, y2]
-            x1, y1, x2, y2 = [int(v) for v in track.to_tlbr()]
-            x1, y1 = max(0, x1), max(0, y1)
-            x2, y2 = min(w_img, x2), min(h_img, y2)
+            x1, y1 = max(0, int(x1)), max(0, int(y1))
+            x2, y2 = min(w_img, int(x2)), min(h_img, int(y2))
 
             center_x = (x1 + x2) // 2
             center_y = (y1 + y2) // 2
 
-            # 1. Trajectory Trails
-            if show_trail:
+            # 1. Trajectory Trails (Only for valid tracked objects)
+            if show_trail and track_id >= 0:
                 if track_id not in self.track_trails:
                     self.track_trails[track_id] = []
                 
-                # Check distance jump from last point to avoid wild diagonal streak lines
+                # Distance jump protection
                 if len(self.track_trails[track_id]) > 0:
                     last_x, last_y = self.track_trails[track_id][-1]
                     dist = np.hypot(center_x - last_x, center_y - last_y)
-                    if dist > 80: # If position jumped > 80px, reset trail history
+                    if dist > 60: # If position jumped > 60px, reset trail history
                         self.track_trails[track_id] = []
 
                 self.track_trails[track_id].append((center_x, center_y))
@@ -79,7 +94,7 @@ class Visualizer:
 
                 pts = self.track_trails[track_id]
                 for i in range(1, len(pts)):
-                    thickness = int(np.sqrt(self.max_trail_len / float(i + 1)) * 2.5)
+                    thickness = int(np.sqrt(self.max_trail_len / float(i + 1)) * 2.0)
                     cv2.line(annotated, pts[i - 1], pts[i], color, max(1, thickness))
 
             # 2. Bounding Box (Corner lines style)
@@ -98,7 +113,8 @@ class Visualizer:
                 cv2.line(annotated, (x2, y2), (x2, y2 - length), color, 4)
 
             # 3. Label Badge
-            label_text = f"ID #{track_id} {class_name.capitalize()} {int(conf * 100)}%"
+            track_label_str = f"ID #{track_id} " if track_id >= 0 else ""
+            label_text = f"{track_label_str}{class_name.capitalize()} {int(conf * 100)}%"
             (txt_w, txt_h), baseline = cv2.getTextSize(label_text, cv2.FONT_HERSHEY_SIMPLEX, 0.5, 2)
             badge_y = max(y1 - 10, txt_h + 10)
 
@@ -107,7 +123,6 @@ class Visualizer:
             cv2.putText(annotated, label_text, (x1 + 5, badge_y), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 2)
 
         # 4. Purge stale track trails
-        active_ids = {t.track_id for t in tracks if t.is_confirmed()}
         self.track_trails = {k: v for k, v in self.track_trails.items() if k in active_ids}
 
         # 5. HUD Top Bar Performance Stats
