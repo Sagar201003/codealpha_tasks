@@ -3,10 +3,17 @@ import numpy as np
 import torch
 
 
+# Minimum confidence thresholds per class to eliminate static object misdetections (e.g. bollards/poles as "person")
+CLASS_CONF_THRESHOLDS = {
+    "person": 0.45,   # Sidewalk bollards/poles score ~25-40% false positive, real humans score > 45%
+    "umbrella": 0.45, # Sidewalk shadows score low false positive, real umbrellas score > 45%
+}
+
+
 class YOLOv8Detector:
     """YOLOv8 Object Detector & High-Speed ByteTrack Tracker wrapper using Ultralytics."""
 
-    def __init__(self, model_name: str = "yolov8n.pt", conf_threshold: float = 0.25, iou_threshold: float = 0.45):
+    def __init__(self, model_name: str = "yolov8n.pt", conf_threshold: float = 0.30, iou_threshold: float = 0.45):
         self.conf_threshold = conf_threshold
         self.iou_threshold = iou_threshold
         self.yolo_model = None
@@ -32,7 +39,7 @@ class YOLOv8Detector:
             print(f"Notice: Ultralytics load warning ({e}). Initialized fallback vision detector.")
 
     def detect(self, frame_bgr: np.ndarray, target_classes: list = None) -> list:
-        """Runs single-frame object detection."""
+        """Runs single-frame object detection with class-specific confidence filtering."""
         results_list = []
         if self.yolo_model is not None:
             results = self.yolo_model(frame_bgr, conf=self.conf_threshold, iou=self.iou_threshold, verbose=False)[0]
@@ -40,6 +47,11 @@ class YOLOv8Detector:
                 cls_id = int(box.cls[0].item())
                 conf = float(box.conf[0].item())
                 class_name = self.coco_classes[cls_id] if cls_id < len(self.coco_classes) else f"class_{cls_id}"
+
+                # Apply per-class confidence filter to eliminate static pole false positives
+                min_conf = CLASS_CONF_THRESHOLDS.get(class_name, self.conf_threshold)
+                if conf < min_conf:
+                    continue
 
                 if target_classes and class_name not in target_classes:
                     continue
@@ -74,6 +86,11 @@ class YOLOv8Detector:
                     cls_id = int(box.cls[0].item())
                     conf = float(box.conf[0].item())
                     class_name = self.coco_classes[cls_id] if cls_id < len(self.coco_classes) else f"class_{cls_id}"
+
+                    # Apply per-class confidence filter to eliminate static pole false positives
+                    min_conf = CLASS_CONF_THRESHOLDS.get(class_name, self.conf_threshold)
+                    if conf < min_conf:
+                        continue
 
                     if target_classes and class_name not in target_classes:
                         continue
