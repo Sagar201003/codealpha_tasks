@@ -15,23 +15,27 @@ from utils.visualizer import Visualizer
 
 
 # ==============================================================================
-# 📹 INPUT VIDEO, MODEL & TRACKER CONFIGURATION
+# 📹 INPUT VIDEO, OUTPUT & MODEL CONFIGURATION
 # 
 # 1. DEFAULT_VIDEO_PATH: Path to input video or "0" for live webcam
 #    Examples: "videos/test1.mp4", "data/sample_traffic.mp4", "0"
 # 
-# 2. DEFAULT_MODEL: YOLO Pretrained Weight Tier
-#    - "yolov8n.pt"  (Nano  - 6 MB)  -> Blazing Fast Real-Time (Default)
+# 2. DEFAULT_OUTPUT_PATH: Path where output result video will be saved
+#    Examples: "output/out.mp4"
+# 
+# 3. DEFAULT_MODEL: YOLO Pretrained Weight Tier
+#    - "yolov8n.pt"  (Nano  - 6 MB)  -> Blazing Fast Real-Time
 #    - "yolov8s.pt"  (Small - 22 MB) -> Fast & Higher Accuracy
 #    - "yolov8m.pt"  (Medium - 50 MB)-> Balanced High Precision
-#    - "yolov8l.pt"  (Large - 83 MB) -> High Accuracy for Small Objects
+#    - "yolov8l.pt"  (Large - 83 MB) -> High Accuracy for Small Objects [Default]
 #    - "yolov8x.pt"  (X-Large- 130 MB)-> Maximum Precision
 # 
-# 3. DEFAULT_TRACKER: Object Tracking Engine
+# 4. DEFAULT_TRACKER: Object Tracking Engine
 #    - "bytetrack" (High-Speed Native ByteTrack, 30+ FPS, Zero ID Jumping) [DEFAULT]
 #    - "deepsort"  (PyTorch CNN Re-ID + 8-State Kalman Association)
 # ==============================================================================
 DEFAULT_VIDEO_PATH = "videos/test1.mp4"
+DEFAULT_OUTPUT_PATH = "output/out.mp4"
 DEFAULT_MODEL = "yolov8l.pt"
 DEFAULT_TRACKER = "bytetrack"
 
@@ -44,7 +48,7 @@ def run_object_detection_and_tracking(
     iou_threshold: float = 0.45,
     classes: list = None,
     show_trail: bool = True,
-    save_video: str = None,
+    save_video: str = DEFAULT_OUTPUT_PATH,
     display: bool = True
 ):
     """
@@ -88,7 +92,7 @@ def run_object_detection_and_tracking(
         os.makedirs(os.path.dirname(os.path.abspath(save_video)), exist_ok=True)
         fourcc = cv2.VideoWriter_fourcc(*'mp4v')
         writer = cv2.VideoWriter(save_video, fourcc, fps_in, (width, height))
-        print(f"Saving output video to: {save_video}")
+        print(f"Output Video Destination: {save_video}")
 
     print("\nProcessing frames... Press 'q' or ESC in OpenCV window to quit.")
     frame_count = 0
@@ -163,18 +167,20 @@ def run_object_detection_and_tracking(
         avg_fps = frame_count / max(total_time, 1e-5)
         print(f"\nProcessing Complete!")
         print(f"Total Frames Processed: {frame_count} | Total Time: {total_time:.2f}s | Avg FPS: {avg_fps:.1f}")
+        if save_video:
+            print(f"Result Saved To: {save_video}")
 
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="OmniTrack AI - Real-Time YOLOv8 Object Tracking")
     parser.add_argument("--source", type=str, default=DEFAULT_VIDEO_PATH, help=f"Video source path or '0' for webcam (default: {DEFAULT_VIDEO_PATH})")
+    parser.add_argument("--save_video", type=str, default=DEFAULT_OUTPUT_PATH, help=f"Output MP4 file path to save annotated result video (default: {DEFAULT_OUTPUT_PATH})")
     parser.add_argument("--model", type=str, default=DEFAULT_MODEL, help=f"YOLO model weight (yolov8n.pt, yolov8s.pt, yolov8m.pt, yolov8l.pt, yolov8x.pt)")
     parser.add_argument("--tracker", type=str, default=DEFAULT_TRACKER, choices=["bytetrack", "deepsort"], help="Tracker engine: 'bytetrack' (30+ FPS, default) or 'deepsort'")
     parser.add_argument("--conf", type=float, default=0.30, help="Detection confidence threshold (default: 0.30)")
     parser.add_argument("--iou", type=float, default=0.45, help="NMS IoU threshold")
     parser.add_argument("--classes", nargs="+", default=None, help="Filter specific classes (e.g. --classes person car)")
     parser.add_argument("--no_trail", action="store_true", help="Disable glowing trajectory trails")
-    parser.add_argument("--save_video", type=str, default=None, help="Output MP4 file path to save annotated video")
     parser.add_argument("--no_display", action="store_true", help="Disable GUI display window for headless execution")
     args = parser.parse_args()
 
